@@ -24,14 +24,17 @@
   // src/paddle.ts
   var Paddle = class {
     center;
+    drawFrom;
     width;
     height;
     direction;
     speed;
-    constructor(_width, _height, _center) {
-      this.width = _width;
-      this.height = _height;
+    color;
+    constructor(_widthFromCenter, _heightFromCenter, _center) {
+      this.width = _widthFromCenter;
+      this.height = _heightFromCenter;
       this.center = _center;
+      this.drawFrom = { x: _center.x - _widthFromCenter, y: _center.y - _heightFromCenter };
       this.direction = { x: -1, y: 0 };
       this.speed = 1;
     }
@@ -42,13 +45,11 @@
   };
 
   // src/draw.ts
-  function rectangle(center, dimensions) {
+  function rectangle(drawFrom, dimensions) {
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
-    const midX = Math.floor(canvas.width / 2);
-    const midY = Math.floor(canvas.height / 2);
     ctx.fillStyle = "blue";
-    ctx.fillRect((center.x + 1) * midX, (center.y + 1) * midY, dimensions.x, dimensions.y);
+    ctx.fillRect((drawFrom.x + 1) / 2 * canvas.width, (drawFrom.y + 1) / 2 * canvas.height, dimensions.x * canvas.width, dimensions.y * canvas.height);
   }
   function circle(radius, center) {
     const canvas = document.getElementById("gameCanvas");
@@ -62,17 +63,20 @@
   }
 
   // src/game.ts
-  function runGame() {
-    let gameBall = new Ball(4, { x: 0, y: 0 });
-    let paddleLeft = new Paddle(5, 25, { x: -0.9, y: 0 });
-    let paddleRight = new Paddle(5, 25, { x: 0.9, y: 0 });
+  var gameIsRunning = true;
+  var gameBall = new Ball(25, { x: 0, y: 0 });
+  var paddleLeft = new Paddle(0.05, 0.2, { x: -0.9, y: 0 });
+  var paddleRight = new Paddle(0.05, 0.2, { x: 0.9, y: 0 });
+  function gameLoop() {
+    if (gameIsRunning == false) return;
     circle(gameBall.radius, gameBall.center);
-    rectangle(paddleLeft.center, { x: paddleLeft.width, y: paddleLeft.height });
-    rectangle(paddleRight.center, { x: paddleRight.width, y: paddleRight.height });
+    rectangle(paddleLeft.drawFrom, { x: paddleLeft.width, y: paddleLeft.height });
+    rectangle(paddleRight.drawFrom, { x: paddleRight.width, y: paddleRight.height });
+    circle(2, { x: -0.9, y: 0 });
+    circle(2, { x: 0.9, y: 0 });
   }
   function main() {
-    console.log("Hello world");
-    runGame();
+    gameLoop();
   }
   main();
 })();

@@ -2,8 +2,8 @@
 
 SRC		:=	src/game.ts
 
-BUNDLE	:=	./$(OUT_DIR)/bundle.js
 OUT_DIR	:=	dist
+BUNDLE	:=	$(OUT_DIR)/bundle.js
 
 .PHONY: all build clean
 
