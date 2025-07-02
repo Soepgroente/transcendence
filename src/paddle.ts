@@ -16,7 +16,7 @@ export class Paddle
 		this.height = _heightFromCenter;
 		this.center = _center;
 		this.drawFrom = {x: _center.x - _widthFromCenter, y: _center.y - _heightFromCenter};
-		this.direction = {x: -1, y: 0};
+		this.direction = {x: 0, y: 0};
 		this.speed = 1;
 	}
 
@@ -24,5 +24,7 @@ export class Paddle
 	{
 		this.center.x += this.direction.x * this.speed;
 		this.center.y += this.direction.y * this.speed;
+		this.drawFrom.x += this.direction.x * this.speed;
+		this.drawFrom.y += this.direction.y * this.speed;
 	}
 }

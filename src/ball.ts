@@ -12,7 +12,7 @@ export class Ball
 		this.radius = _radius;
 		this.center = _center;
 		this.direction = this.randomVector();
-		this.speed = 1;
+		this.speed = 0.001;
 	}
 	
 	randomVector(): vec2
