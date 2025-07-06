@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Google Sign-In Test</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+  <div id="g_id_onload"
+       data-client_id="GOOGLE_CLIENT_ID"
+       data-callback="handleCredentialResponse">
+  </div>
+
+  <div class="g_id_signin" data-type="standard"></div>
+
+  <script>
+    async function handleCredentialResponse(response) {
+      console.log("Encoded JWT ID token: " + response.credential);
+      const res = await fetch('http://localhost:4000/verify-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: response.credential })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('User authenticated! Welcome ' + data.payload.email);
+      } else {
+        alert('Authentication failed');
+      }
+    }
+  </script>
+</body>
+</html>
