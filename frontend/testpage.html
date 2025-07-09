@@ -14,9 +14,9 @@
       margin: 0;
     }
     #gameCanvas {
-      background: #8887bc;
+      background: #000000;
       display: block;
-      border: 2px solid #000000;
+      border: 2px solid #ffe97c;
     }
   </style>
 </head>
@@ -25,3 +25,31 @@
   <script src="dist/bundle.js"></script>
 </body>
 </html>
+
+<!-- <!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>BabylonJS Test</title>
+  <style>
+    body { margin: 0; }
+    #gameCanvas { width: 800px; height: 600px; border: 2px solid #ffe97c;}
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="800" height="600"></canvas>
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const engine = new BABYLON.Engine(canvas, true);
+    const scene = new BABYLON.Scene(engine);
+    const camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
+    camera.setTarget(BABYLON.Vector3.Zero());
+    camera.attachControl(canvas, true);
+    const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+    const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", { diameter: 2, segments: 32 }, scene);
+    sphere.position.y = 1;
+    engine.runRenderLoop(() => scene.render());
+  </script>
+</body>
+</html> -->
