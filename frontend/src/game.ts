@@ -13,19 +13,19 @@ function keyEvents()
 {
 	if (keys['ArrowUp'] == true)
 	{
-		paddles[0].direction.z += 0.1;
+		paddles[0].direction.z += -0.1;
 	}
 	if (keys['ArrowDown'] == true)
 	{
-		paddles[0].direction.z += -0.1;
+		paddles[0].direction.z += 0.1;
 	}
 	if (keys['w'] == true)
 	{
-		paddles[1].direction.z += 0.1;
+		paddles[1].direction.z += -0.1;
 	}
 	if (keys['s'] == true)
 	{
-		paddles[1].direction.z += -0.1;
+		paddles[1].direction.z += 0.1;
 	}
 }
 
@@ -62,10 +62,11 @@ function handleCollisions()
 			if (balls[i].sphere.intersectsMesh(paddles[x].mesh) == true)
 			{
 				balls[i].direction.x *= -1;
-			}
-			if (Math.abs(balls[i].direction.x) < 0.1)
-			{
-				balls[i].direction.z *= -1;
+				if (Math.abs(balls[i].direction.x) < 0.1)
+				{
+					balls[i].direction.z *= -1;
+				}
+				balls[i].moveBall();
 			}
 		}
 		if (balls[i].sphere.intersectsMesh(walls[0]) == true ||
@@ -77,11 +78,15 @@ function handleCollisions()
 			balls[i].sphere.intersectsMesh(walls[3]) == true)
 		{
 			balls[i].direction.z *= -1;
-			// if (Math.abs(balls[i].direction.z) < 0.1)
-			// {
-			// 	balls[i].direction.x *= -1;
-			// }
 		}
+		// for (let b = 0; b < balls.length; b++)
+		// {
+		// 	if (b != i && balls[i].sphere.intersectsMesh(balls[b].sphere) == true)
+		// 	{
+		// 		balls[i].direction.x *= -1;
+		// 		balls[i].direction.z *= -1;
+		// 	}
+		// }
 	}
 }
 
@@ -93,25 +98,10 @@ function createPeddles(scene: Scene)
 
 function createBalls(scene: Scene)
 {
-	balls.push(new Ball(new Vector3(0, 0.5, 0), Color3.Black(), 0.6, scene));
-	balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(0.8, 0.2, 0.2), 0.6, scene));
-	balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(0.2, 0.2, 0.8), 0.6, scene));
-	balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(0.2, 0.6, 0.6), 0.6, scene));
-	balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(0.2, 0.8, 0.4), 0.6, scene));
-	balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(0.8, 0.4, 0.2), 0.6, scene));
-	balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(0.4, 0.2, 0.8), 0.6, scene));
-	balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(0.6, 0.8, 0.2), 0.6, scene));
-	balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(0.2, 0.4, 0.8), 0.6, scene));
-	balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(0.8, 0.6, 0.2), 0.6, scene));
-	balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(0.4, 0.8, 0.6), 0.6, scene));
-	balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(0.6, 0.2, 0.8), 0.6, scene));
-	balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(0.8, 0.4, 0.6), 0.6, scene));
-	balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(0.2, 0.8, 0.4), 0.6, scene));
-	balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(0.4, 0.6, 0.2), 0.6, scene));
-	balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(0.6, 0.2, 0.4), 0.6, scene));
-	balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(0.8, 0.6, 0.4), 0.6, scene));
-	balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(0.2, 0.4, 0.6), 0.6, scene));
-	balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(0.6, 0.8, 0.4), 0.6, scene));
+	for (let i = 0; i < 25; i++)
+	{
+		balls.push(new Ball(new Vector3(0, 0.5, 0), new Color3(Math.random(), Math.random(), Math.random()), Math.random(), scene));
+	}
 }
 
 function createScene(engine: Engine): Scene
@@ -120,8 +110,6 @@ function createScene(engine: Engine): Scene
 	const camera = new FreeCamera("camera1", new Vector3(0, 30, 5), scene);
 	camera.setTarget(Vector3.Zero());
 	camera.attachControl(canvas, true);
-	// const light = new HemisphericLight("light", new Vector3(0, 1, 0), scene);
-	// light.intensity = 0.7;
 	const light2 = new PointLight("pointLight", camera.position, scene);
 	light2.intensity = 0.8;
 	const ground = MeshBuilder.CreateGround('ground', {width: 30, height: 20, updatable: true}, scene);
