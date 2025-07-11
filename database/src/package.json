@@ -1,0 +1,16 @@
+{
+	"dependencies": {
+	"@libsql/client": "^0.15.9",
+	"dotenv": "^17.1.0",
+	"drizzle-kit": "^0.31.4",
+	"drizzle-orm": "^0.44.2",
+	"drizzle-seed": "^0.3.1",
+	"tsx": "^4.20.3"
+	},
+	"scripts": {
+		"db:generate": "drizzle-kit generate",
+		"db:migrate": "drizzle-kit migrate",
+		"db:push": "drizzle-kit push",
+		"dev": "tsx src/index.ts"
+	}
+}

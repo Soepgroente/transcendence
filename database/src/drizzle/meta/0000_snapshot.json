@@ -1,0 +1,216 @@
+{
+  "version": "6",
+  "dialect": "sqlite",
+  "id": "1ece604c-d075-4225-9cbd-a4d46edaf2aa",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "tables": {
+    "match_history_table": {
+      "name": "match_history_table",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "mode": {
+          "name": "mode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "victor": {
+          "name": "victor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "unique_match_idx": {
+          "name": "unique_match_idx",
+          "columns": [
+            "createdAt",
+            "mode",
+            "victor"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "match_history_table_victor_user_table_alias_fk": {
+          "name": "match_history_table_victor_user_table_alias_fk",
+          "tableFrom": "match_history_table",
+          "tableTo": "user_table",
+          "columnsFrom": [
+            "victor"
+          ],
+          "columnsTo": [
+            "alias"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "single_match_players_table": {
+      "name": "single_match_players_table",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "player": {
+          "name": "player",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "score": {
+          "name": "score",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
+        },
+        "placement": {
+          "name": "placement",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": -1
+        },
+        "matchId": {
+          "name": "matchId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "unique_participation_idx": {
+          "name": "unique_participation_idx",
+          "columns": [
+            "player",
+            "matchId"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {
+        "single_match_players_table_player_user_table_alias_fk": {
+          "name": "single_match_players_table_player_user_table_alias_fk",
+          "tableFrom": "single_match_players_table",
+          "tableTo": "user_table",
+          "columnsFrom": [
+            "player"
+          ],
+          "columnsTo": [
+            "alias"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "single_match_players_table_matchId_match_history_table_id_fk": {
+          "name": "single_match_players_table_matchId_match_history_table_id_fk",
+          "tableFrom": "single_match_players_table",
+          "tableTo": "match_history_table",
+          "columnsFrom": [
+            "matchId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "user_table": {
+      "name": "user_table",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "alias": {
+          "name": "alias",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "user_table_alias_unique": {
+          "name": "user_table_alias_unique",
+          "columns": [
+            "alias"
+          ],
+          "isUnique": true
+        },
+        "user_table_email_unique": {
+          "name": "user_table_email_unique",
+          "columns": [
+            "email"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {
+    "schemas": {},
+    "tables": {},
+    "columns": {}
+  },
+  "internal": {
+    "indexes": {}
+  }
+}
