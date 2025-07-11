@@ -1,4 +1,6 @@
-# Install dependencies: npm install --save-dev esbuild typescript
+#	Install dependencies: npm install --save-dev esbuild typescript
+#	npm install babylonjs --save
+#	npm install @babylonjs/core
 
 SRC		:=	src/game.ts
 
