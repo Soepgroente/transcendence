@@ -4,6 +4,6 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
-    "@babylonjs/core": "^8.15.1"
+    "@babylonjs/core": "^8.16.0"
   }
 }

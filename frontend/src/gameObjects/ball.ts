@@ -11,7 +11,7 @@ export class Ball
 		this.sphere = MeshBuilder.CreateSphere("sphere", {segments: 32, diameter: _diameter}, scene);
 		this.sphere.position = _center;
 		this.direction = this.randomVector();
-		this.speed = 0.01;
+		this.speed = 0.25;
 
 		const mat = new StandardMaterial("ballMat", this.sphere.getScene());
         mat.diffuseColor = _color;
