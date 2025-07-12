@@ -1,11 +1,13 @@
-import { Ball, Paddle } from './index';
-import { Engine, Scene, FreeCamera, PointLight, Vector3, Color3, Mesh, MeshBuilder, StandardMaterial } from '@babylonjs/core';
+import { Wall, Ball, Paddle } from './index';
+import { Engine, Scene, FreeCamera, PointLight, Vector2, Vector3, Color3, Mesh, MeshBuilder, StandardMaterial,
+		PhysicsShapeType, HavokPlugin, PhysicsAggregate } from '@babylonjs/core';
 
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
+const arena = Vector2.Zero();
 let gameIsRunning = true;
 let paddles: Paddle[] = [];
 let balls: Ball[] = [];
-let walls: Mesh[] = [];
+let walls: Wall[] = [];
 
 const keys: Record<string, boolean> = {};
 
@@ -39,54 +41,68 @@ function createWalls(scene: Scene)
 	wallMat.alpha = 0.1;
 	wallMat.diffuseColor = new Color3(1, 1, 1);
 
-	walls.push(MeshBuilder.CreateBox('leftWall', {width: wallThickness, height: wallHeight, depth: groundHeight + wallThickness * 2}, scene));
-	walls.push(MeshBuilder.CreateBox('rightWall', {width: wallThickness, height: wallHeight, depth: groundHeight + wallThickness * 2}, scene));
-	walls.push(MeshBuilder.CreateBox('topWall', {width: groundWidth, height: wallHeight, depth: wallThickness}, scene));
-	walls.push(MeshBuilder.CreateBox('bottomWall', {width: groundWidth, height: wallHeight, depth: wallThickness}, scene));
-	walls[0].position = new Vector3(-groundWidth / 2 - wallThickness / 2, wallHeight / 2, 0);
-	walls[1].position = new Vector3(groundWidth / 2 + wallThickness / 2, wallHeight / 2, 0);
-	walls[2].position = new Vector3(0, wallHeight / 2, -groundHeight / 2 - wallThickness / 2);
-	walls[3].position = new Vector3(0, wallHeight / 2, groundHeight / 2 + wallThickness / 2);
-	for (let i = 0; i < walls.length; i++)
-	{
-		walls[i].material = wallMat;
-	}
+	walls.push(
+		new Wall(new Vector3(wallThickness, wallHeight, groundHeight + wallThickness * 2),
+		new Vector3(-groundWidth / 2 - wallThickness / 2, wallHeight / 2, 0),
+		Color3.Black(),
+		new Vector3(1, 0, 0),
+		scene)
+	);
+	
+	walls.push(
+		new Wall(new Vector3(wallThickness, wallHeight, groundHeight + wallThickness * 2),
+		new Vector3(groundWidth / 2 + wallThickness / 2, wallHeight / 2, 0),
+		Color3.Black(),
+		new Vector3(-1, 0, 0),
+		scene)
+	);
+
+	walls.push(
+		new Wall(new Vector3(groundWidth, wallHeight, wallThickness),
+		new Vector3(0, wallHeight / 2, -groundHeight / 2 - wallThickness / 2),
+		Color3.Black(),
+		new Vector3(0, 0, -1),
+		scene)
+	);
+
+	walls.push(
+		new Wall(new Vector3(groundWidth, wallHeight, wallThickness),
+		new Vector3(0, wallHeight / 2, groundHeight / 2 + wallThickness / 2),
+		Color3.Black(),
+		new Vector3(0, 0, 1),
+		scene)
+	);
 }
 
 function handleCollisions()
 {
 	for (let i = 0; i < balls.length; i++)
 	{
+		balls[i].move();
 		for (let x = 0; x < paddles.length; x++)
 		{
 			if (balls[i].sphere.intersectsMesh(paddles[x].mesh) == true)
 			{
+				balls[i].reverseMove();
 				balls[i].direction.x *= -1;
-				if (Math.abs(balls[i].direction.x) < 0.1)
+				if (Math.abs(balls[i].direction.x) < 1)
 				{
 					balls[i].direction.z *= -1;
 				}
-				balls[i].moveBall();
+				balls[i].move();
+				break;
 			}
 		}
-		if (balls[i].sphere.intersectsMesh(walls[0]) == true ||
-			balls[i].sphere.intersectsMesh(walls[1]) == true)
+		for (let w = 0; w < walls.length; w++)
 		{
-			balls[i].direction.x *= -1;
+			if (balls[i].sphere.intersectsMesh(walls[w].mesh) == true)
+			{
+				balls[i].reverseMove();
+				balls[i].changeDirection(walls[w].normal);
+				balls[i].move();
+				break;
+			}
 		}
-		if (balls[i].sphere.intersectsMesh(walls[2]) == true ||
-			balls[i].sphere.intersectsMesh(walls[3]) == true)
-		{
-			balls[i].direction.z *= -1;
-		}
-		// for (let b = 0; b < balls.length; b++)
-		// {
-		// 	if (b != i && balls[i].sphere.intersectsMesh(balls[b].sphere) == true)
-		// 	{
-		// 		balls[i].direction.x *= -1;
-		// 		balls[i].direction.z *= -1;
-		// 	}
-		// }
 	}
 }
 
@@ -117,9 +133,16 @@ function createScene(engine: Engine): Scene
 	mat.diffuseColor = new Color3(0.2, 1, 1);
 	mat.ambientColor = new Color3(1, 0.2, 0.2);
 	ground.material = mat;
+
+	// const hk = new HavokPlugin();
+  	// scene.enablePhysics(new Vector3(0, -9.8, 0), hk);
+	//   // Create a sphere shape and the associated body. Size will be determined automatically.
 	createBalls(scene);
 	createPeddles(scene);
 	createWalls(scene);
+	// var sphereAggregate = new PhysicsAggregate(balls[0].sphere, PhysicsShapeType.SPHERE, { mass: 1, restitution:0.75}, scene);
+
+	// var groundAggregate = new PhysicsAggregate(ground, PhysicsShapeType.BOX, { mass: 0 }, scene);
 	return scene;
 }
 
@@ -142,7 +165,7 @@ function main()
 		}
 		for (let i = 0; i < balls.length; i++)
 		{
-			balls[i].moveBall();
+			balls[i].move();
 		}
 		scene.render();
 	});

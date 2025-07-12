@@ -5,10 +5,11 @@ export class Ball
 	direction:	Vector3;
 	speed:		number;
 	sphere:		Mesh;
+	tmpVector:	Vector3;
 
 	constructor(_center: Vector3, _color: Color3, _diameter: number, scene: Scene)
 	{
-		this.sphere = MeshBuilder.CreateSphere("sphere", {segments: 32, diameter: _diameter}, scene);
+		this.sphere = MeshBuilder.CreateSphere("sphere", {diameter: _diameter}, scene);
 		this.sphere.position = _center;
 		this.direction = this.randomVector();
 		this.speed = 0.25;
@@ -21,12 +22,26 @@ export class Ball
 	randomVector(): Vector3
 	{
 		const angle: number = Math.random() * 2 * Math.PI;
-		return (new Vector3(Math.cos(angle), 0, Math.sin(angle)));
+		const randomVec = new Vector3(Math.cos(angle), 0, Math.sin(angle));
+		randomVec.normalize();
+		return randomVec;
 	}
 
-	moveBall()
+	move()
 	{
 		this.sphere.position.x += this.direction.x * this.speed;
 		this.sphere.position.z += this.direction.z * this.speed;
+	}
+
+	reverseMove()
+	{
+		this.sphere.position.x -= this.direction.x * this.speed;
+		this.sphere.position.z -= this.direction.z * this.speed;
+	}
+
+	changeDirection(surfaceNormal: Vector3, collisionMomentum?: Vector3)
+	{
+		this.tmpVector = surfaceNormal.scale(-2 * Vector3.Dot(this.direction, surfaceNormal));
+		this.direction = this.direction.add(this.tmpVector);
 	}
 }
