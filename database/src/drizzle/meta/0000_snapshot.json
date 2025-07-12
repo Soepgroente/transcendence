@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "1ece604c-d075-4225-9cbd-a4d46edaf2aa",
+  "id": "af07c2bf-6790-4442-bd85-8e92b7b09927",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "match_history_table": {
@@ -48,10 +48,10 @@
         }
       },
       "foreignKeys": {
-        "match_history_table_victor_user_table_alias_fk": {
-          "name": "match_history_table_victor_user_table_alias_fk",
+        "match_history_table_victor_users_table_alias_fk": {
+          "name": "match_history_table_victor_users_table_alias_fk",
           "tableFrom": "match_history_table",
-          "tableTo": "user_table",
+          "tableTo": "users_table",
           "columnsFrom": [
             "victor"
           ],
@@ -118,10 +118,10 @@
         }
       },
       "foreignKeys": {
-        "single_match_players_table_player_user_table_alias_fk": {
-          "name": "single_match_players_table_player_user_table_alias_fk",
+        "single_match_players_table_player_users_table_alias_fk": {
+          "name": "single_match_players_table_player_users_table_alias_fk",
           "tableFrom": "single_match_players_table",
-          "tableTo": "user_table",
+          "tableTo": "users_table",
           "columnsFrom": [
             "player"
           ],
@@ -149,8 +149,8 @@
       "uniqueConstraints": {},
       "checkConstraints": {}
     },
-    "user_table": {
-      "name": "user_table",
+    "users_table": {
+      "name": "users_table",
       "columns": {
         "id": {
           "name": "id",
@@ -182,15 +182,15 @@
         }
       },
       "indexes": {
-        "user_table_alias_unique": {
-          "name": "user_table_alias_unique",
+        "users_table_alias_unique": {
+          "name": "users_table_alias_unique",
           "columns": [
             "alias"
           ],
           "isUnique": true
         },
-        "user_table_email_unique": {
-          "name": "user_table_email_unique",
+        "users_table_email_unique": {
+          "name": "users_table_email_unique",
           "columns": [
             "email"
           ],

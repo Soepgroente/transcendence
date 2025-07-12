@@ -1,16 +1,23 @@
 {
 	"dependencies": {
-	"@libsql/client": "^0.15.9",
-	"dotenv": "^17.1.0",
-	"drizzle-kit": "^0.31.4",
-	"drizzle-orm": "^0.44.2",
-	"drizzle-seed": "^0.3.1",
-	"tsx": "^4.20.3"
+		"@libsql/client": "^0.15.9",
+		"dotenv": "^17.2.0",
+		"drizzle-kit": "^0.31.4",
+		"drizzle-orm": "^0.44.2",
+		"drizzle-seed": "^0.3.1"
 	},
 	"scripts": {
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:push": "drizzle-kit push",
-		"dev": "tsx src/index.ts"
+		"dev": "tsx src/index.ts",
+		"build": "tsc --skipLibCheck true",
+		"build:strict": "tsc --skipLibCheck false",
+		"start": "node dist/index.js"
+	},
+	"devDependencies": {
+		"@types/node": "^24.0.13",
+		"tsx": "^4.20.3",
+		"typescript": "^5.8.3"
 	}
 }
