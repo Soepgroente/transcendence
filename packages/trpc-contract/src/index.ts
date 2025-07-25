@@ -1,4 +1,4 @@
-import { userRouter } from "./router/user";
+import { userRouter, authRouter } from "./router";
 import { createRouter, publicProcedure } from "./trpc";
 
 /**
@@ -7,6 +7,7 @@ import { createRouter, publicProcedure } from "./trpc";
  */
 export const appRouter = createRouter({
   user: userRouter,
+  auth: authRouter,
   hello: publicProcedure.query(() => {
     return "Hello, world!";
   }),
