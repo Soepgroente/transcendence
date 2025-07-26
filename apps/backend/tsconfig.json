@@ -8,6 +8,10 @@
 	"src/**/*",
   "../../packages/db/types/**/*"
   ],
+   "exclude": [
+    "node_modules",
+    "dist"
+  ],
   "references": [
     { "path": "../../packages/db" },
     { "path": "../../packages/trpc-contract" }
