@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "src/index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
   },
   "author": "",
   "license": "ISC",
@@ -11,5 +12,9 @@
   "dependencies": {
     "@trpc/server": "^11.4.3",
     "zod": "^4.0.5"
+  },
+   "devDependencies": {
+    "@types/node": "^24.0.14",
+    "typescript": "^5.8.3"
   }
 }

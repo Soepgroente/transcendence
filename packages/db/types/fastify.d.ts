@@ -4,6 +4,6 @@ import * as schema from '../src/db/schema'
 
 declare module 'fastify' {
 	interface FastifyInstance {
-		db: ReturnType<typeof drizzle<typeof schema>> 
+		db: ReturnType<typeof drizzle<typeof schema>>;
 	}
 }
