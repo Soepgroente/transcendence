@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "ts-node src/index.ts",
-    "dev:watch": "nodemon --exec ts-node src/index.ts",
+    "dev": "tsx src/index.ts",
+    "dev:watch": "tsx --watch ts-node src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,14 +13,17 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@repo/db": "workspace:*",
     "@repo/trpc": "workspace:*",
     "@trpc/server": "^11.4.3",
+    "dotenv": "^17.2.1",
     "fastify": "^5.4.0",
     "nodemon": "^3.1.10"
   },
   "devDependencies": {
     "@types/node": "^24.0.14",
     "ts-node": "^10.9.1",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }
 }

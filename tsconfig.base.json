@@ -14,6 +14,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "baseUrl": ".",
+    "types": ["node"],
     "paths": {
       "@repo/db": ["./packages/db/src"],
       "@repo/db/*": ["./packages/db/src/*"],

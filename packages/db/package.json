@@ -1,13 +1,13 @@
 {
   "name": "@repo/db",
   "version": "1.0.0",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate --config=src/drizzle.config.ts",
+    "db:migrate": "drizzle-kit migrate --config=src/drizzle.config.ts",
+    "db:push": "drizzle-kit push --config=src/drizzle.config.ts",
     "dev": "tsx src/index.ts",
     "dev_2": "tsx src/fastify_tutorial/server_with_route.ts",
     "build": "tsc",
@@ -26,7 +26,7 @@
     "fastify-plugin": "^5.0.1"
   },
   "devDependencies": {
-    "@types/node": "^24.0.14",
+    "@types/node": "^24.1.0",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }

@@ -8,8 +8,5 @@
     "clean": "find . -name 'dist' -type d -exec rm -rf {} + 2>/dev/null && find . -name '*.tsbuildinfo' -delete 2>/dev/null",
     "clean:build": "pnpm clean && pnpm build",
     "build": "pnpm --filter @repo/db build && pnpm --filter @repo/trpc build && pnpm --filter backend build"
-  },
-  "dependencies": {
-    "pnpm": "^10.13.1"
   }
 }
