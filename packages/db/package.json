@@ -1,0 +1,34 @@
+{
+  "name": "@repo/db",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "dev": "tsx src/index.ts",
+    "dev_2": "tsx src/fastify_tutorial/server_with_route.ts",
+    "build": "tsc -w --skipLibCheck true",
+    "build:strict": "tsc -w --skipLibCheck false",
+    "start": "node --watch dist/index.js",
+    "fastify_tutorial": "node --watch dist/fastify_tutorial/server_with_route.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@libsql/client": "^0.15.10",
+    "dotenv": "^17.2.0",
+    "drizzle-kit": "^0.31.4",
+    "drizzle-orm": "^0.44.3",
+    "drizzle-seed": "^0.3.1",
+    "fastify": "^5.4.0",
+    "fastify-plugin": "^5.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.14",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  }
+}

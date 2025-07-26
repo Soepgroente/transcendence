@@ -5,6 +5,8 @@
     "dev:backend": "pnpm --filter backend dev",
     "dev:frontend": "pnpm --filter frontend dev",
     "dev": "pnpm -r dev"
+  },
+  "dependencies": {
+    "pnpm": "^10.13.1"
   }
-
 }

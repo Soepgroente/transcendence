@@ -2,6 +2,7 @@ services:
   pong:
     container_name: pong
     build: .
+    init: true
     working_dir: /pong
     volumes:
       - .:/pong

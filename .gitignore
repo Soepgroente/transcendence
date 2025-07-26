@@ -7,8 +7,11 @@ pids
 *.pid
 *.seed
 *.pid.lock
+*.env
+*.db
 
 *dist/
+*drizzle/
 
 # node-waf configuration
 .lock-wscript
