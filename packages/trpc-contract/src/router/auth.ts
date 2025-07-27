@@ -9,7 +9,7 @@ export const authRouter = createRouter({
   signUp: publicProcedure
 
     .input(signUpInput)
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ ctx: _ctx, input }) => { // added _ctx to indicate it's optional so that it doesn't give a warning during the build step
       //   const hashedPassword = return a hashed version of input.password
       // const user = await ctx.db.createUser({
       //     name: input.name,
