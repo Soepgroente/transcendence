@@ -12,6 +12,8 @@ const start = async () => {
     const fastify = await buildServer();
 
   try {
+  
+    /* Just a simple test to confirm connection to the database, it will create a new user every time it runs */
       const tableInfo = await fastify.db.run('PRAGMA table_info(users_table)');
       console.log('Table info:', tableInfo);
 
@@ -35,6 +37,8 @@ const start = async () => {
         detail: dbErr.detail
     });
   }
+  /* End of test */
+
     await fastify.listen({ port: 3000, host: "0.0.0.0" });
     console.log("🚀 Server running at http://localhost:3000");
   } catch (err) {
