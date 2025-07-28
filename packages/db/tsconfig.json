@@ -10,8 +10,8 @@
 	},
 	"include": [
 		"src/**/*",
-		"types/**/*", 
-    "drizzle.config.ts"	],
+		"types/**/*"
+  ],
 	"exclude": [
 		"node_modules",
 		"dist"
