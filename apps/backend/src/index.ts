@@ -23,6 +23,7 @@ const start = async () => {
       const user = {
         name: `User.${Date.now()}`,
         alias: `Johnny.${Date.now()}`,
+        password: `pass.${Date.now()}`,
         email: `john@example.com.${Date.now()}`,
       };
       const result = await fastify.db.insert(usersTable).values(user).returning();

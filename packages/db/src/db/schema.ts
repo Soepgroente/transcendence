@@ -4,6 +4,7 @@ export const usersTable = sqliteTable(
 	"users_table", {
 		id: int().primaryKey({ autoIncrement: true }),
 		alias: text().notNull().unique(),
+    password: text().notNull(),
 		name: text(),
 		email: text().notNull().unique(),
 });
