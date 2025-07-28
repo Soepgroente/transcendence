@@ -7,6 +7,7 @@
     "dev": "pnpm -r dev",
     "clean": "find . -name 'dist' -type d -exec rm -rf {} + 2>/dev/null && find . -name '*.tsbuildinfo' -delete 2>/dev/null",
     "clean:build": "pnpm clean && pnpm build",
-    "build": "pnpm --filter @repo/db build && pnpm --filter @repo/trpc build && pnpm --filter backend build"
+    "build": "pnpm --filter @repo/db build && pnpm --filter @repo/trpc build && pnpm --filter backend build",
+    "reset_pnpm": "rm -rf apps/*/node_modules packages/*/node_modules node_modules pnpm-lock.yaml && pnpm install" 
   }
 }

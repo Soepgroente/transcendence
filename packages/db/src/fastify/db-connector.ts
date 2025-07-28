@@ -15,8 +15,11 @@ import path from 'path';
 async function fastifydbConnector(fastify: FastifyInstance, _options: FastifyPluginOptions) {
 	
   const dbFileName = process.env.DB_FILE_NAME! || 'local.db';
-  const dbPath = path.resolve(__dirname, '../../../../', dbFileName);
-  console.log("path in dbConnector: ", dbPath);
+  const dbPath = path.resolve(process.cwd(), '../../', dbFileName);
+  
+  // Confirm path
+  // console.log("path in dbConnector: ", dbPath);
+  
   const client = createClient({
     url: `file:${dbPath}`
   });
