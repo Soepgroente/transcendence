@@ -1,3 +1,13 @@
+CREATE TABLE `friendships_table` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`userId` integer NOT NULL,
+	`friendId` integer NOT NULL,
+	FOREIGN KEY (`userId`) REFERENCES `users_table`(`id`) ON UPDATE no action ON DELETE no action,
+	FOREIGN KEY (`friendId`) REFERENCES `users_table`(`id`) ON UPDATE no action ON DELETE no action,
+	CONSTRAINT "check_befriend_self" CHECK("friendships_table"."userId" != "friendships_table"."friendId")
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `unique_friendship_idx` ON `friendships_table` (`userId`,`friendId`);--> statement-breakpoint
 CREATE TABLE `match_history_table` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`mode` text NOT NULL,
@@ -23,7 +33,14 @@ CREATE TABLE `users_table` (
 	`alias` text NOT NULL,
 	`password` text NOT NULL,
 	`name` text,
-	`email` text NOT NULL
+	`email` text NOT NULL,
+	`avatarPath` text DEFAULT 'avatar_default',
+	`backgroundPath` text DEFAULT 'background_default',
+	`lastLoginTime` integer,
+	`lastActivityTime` integer,
+	`totalMatches` integer DEFAULT 0 NOT NULL,
+	`wins` integer DEFAULT 0 NOT NULL,
+	`losses` integer DEFAULT 0 NOT NULL
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `users_table_alias_unique` ON `users_table` (`alias`);--> statement-breakpoint
