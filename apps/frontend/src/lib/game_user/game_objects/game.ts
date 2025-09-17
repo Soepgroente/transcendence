@@ -4,7 +4,7 @@ import { Wall, Ball, Paddle, createSurroundingWalls,
 		jsonToVector3, GameMenu, ColorMap, Colors } from '../../index';
 import { CreateStreamingSoundAsync, CreateAudioEngineAsync, StreamingSound,
 		Engine, Scene, FreeCamera, Color3, Vector3, HemisphericLight,
-		HavokPlugin, StandardMaterial, Layer, PhysicsViewer } from '@babylonjs/core';
+		HavokPlugin, StandardMaterial, Layer } from '@babylonjs/core';
 import { TextBlock, AdvancedDynamicTexture } from '@babylonjs/gui';
 import type { AudioEngineV2 } from '@babylonjs/core';
 
@@ -117,6 +117,7 @@ export class Game
 		const havokPlugin = new HavokPlugin(true, this.havokInstance);
 		
 		scene.enablePhysics(new Vector3(0, -10, 0), havokPlugin);
+		// camera.attachControl(this.gameCanvas, true);
 		const hemiLight = new HemisphericLight('hemiLight', new Vector3(0, 10, 0), scene);
 		hemiLight.intensity = 0.6;
 		
@@ -124,7 +125,6 @@ export class Game
 		const cameraHeight = Math.max(this.dimensions[0], this.dimensions[1]) + 10;
 		const camera = new FreeCamera('camera1', new Vector3(0, cameraHeight, 0), scene);
 		camera.setTarget(Vector3.Zero());
-		camera.attachControl(this.gameCanvas, true);
 		createGround(scene, this.dimensions);
 		createBalls(scene, this.balls, map);
 		createSurroundingWalls(scene, this.walls, this.dimensions);
@@ -138,18 +138,6 @@ export class Game
 		background.isBackground = true;
 		this.scene = scene;
 		this.playerCount = this.players.length;
-
-		// Debug Physics Viewer
-		// scene.onDataLoadedObservable.addOnce(() => {
-		// const viewer = new PhysicsViewer(scene);
-		// scene.meshes.forEach(m =>
-		// 	{
-		// 		if ((m as any).physicsBody || (m as any).physicsAggregate)
-		// 		{
-		// 			viewer.showBody((m as any).physicsBody || (m as any).physicsAggregate.body);
-		// 		}
-		// 	});
-		// });
 	}
 
 	private victory()

@@ -3,16 +3,22 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { Game } from '$lib/index';
 
-	let game: Game;
+	let game: Game = null;
 	onMount(async () =>
 	{
 		const { startGame } = await import('$lib');
-		game = await startGame('maps/tragedy.map');
+		if (game == null)
+		{
+			game = await startGame('maps/standard4player.map');
+		}
 	});
 	onDestroy(async () =>
 	{
 		const { destroyGame } = await import('$lib');
-		await destroyGame(game);
+		if (game != null)
+		{
+			await destroyGame(game);
+		}
 	});
 </script>
 

@@ -60,7 +60,6 @@ export class Ball
 			{
 				this.lasthit = pad;
 				this.speed += Ball.speedIncrement;
-				console.log("paddlebonk");
 				Game.playPaddleHitSound();
 			}
 		}
@@ -69,7 +68,6 @@ export class Ball
 		{
 			if (this.mesh.intersectsMesh(walls[i].getMesh(), false) == true)
 			{
-				console.log("wallbonk");
 				Game.playWallHitSound();
 			}
 		}

@@ -13,7 +13,6 @@ export class Goal
 	private normal:		Vector3;
 	private color:		Color3;
 	private scoringCooldown: number;
-	private aggregate:	PhysicsAggregate;
 
 	private static goalPostMaterial: StandardMaterial;
 	private static eliminatedMaterial: StandardMaterial;
@@ -29,16 +28,13 @@ export class Goal
 		this.post1 = this.createPost(post1, scene);
 		this.post2 = this.createPost(post2, scene);
 		
-		this.plate = MeshBuilder.CreateBox(
-			'goalplate',
+		this.plate = MeshBuilder.CreateBox('goalplate',
 			{ width: dimensions.x, height: Goal.height, depth: dimensions.z },
 			scene
 		);
 		this.plate.position = goalpos;
-		this.plate.position.y = Goal.height / 2;
-		this.plate.rotate(Vector3.Up(), Math.atan2(normalDir.x, normalDir.z) + Math.PI / 2);
 
-		this.aggregate = new PhysicsAggregate(
+		new PhysicsAggregate(
 			this.plate,
 			PhysicsShapeType.BOX,
 			{ mass: 0, restitution: 1 },
@@ -51,6 +47,10 @@ export class Goal
 		mat.alpha = 0.4;
 		mat.maxSimultaneousLights = 16;
 		this.plate.material = mat;
+
+		const angle = Math.atan2(normalDir.x, normalDir.z);
+
+		this.plate.rotate(Vector3.Up(), Math.atan2(normalDir.x, normalDir.z) + Math.PI / 2);
 	}
 
 	createPost(position: Vector3, scene: Scene): Mesh
@@ -58,7 +58,6 @@ export class Goal
 		const post = MeshBuilder.CreateCylinder('goalPost', { diameter: goalPostDiameter, height: Goal.height }, scene);
 		post.position = position;
 		post.material = Goal.goalPostMaterial;
-		post.position.y = Goal.height / 2;
 
 		new PhysicsAggregate(
 			post,
@@ -146,7 +145,7 @@ export class Goal
 	{
 		return Goal.height;
 	}
-
+	
 	static createGoalPostMaterial(scene: Scene)
 	{
 		const mat = new StandardMaterial('goalPostMat', scene);

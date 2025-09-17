@@ -55,19 +55,18 @@ export function	createSurroundingWalls(scene: Scene, walls: Wall[], dimensions: 
 
 export function createWalls(scene: Scene, walls: Wall[], map: any)
 {
-	if (map.walls == null || map.walls.length == 0)
+	if (!map.walls)
 	{
 		return;
 	}
 	for (let i = 0; i < map.walls.length; i++)
 	{
-		console.log('hello');
 		walls.push(new Wall
 		(
 			jsonToVector3(map.walls[i].dimensions),
 			jsonToVector3(map.walls[i].location),
 			jsonToVector3(map.walls[i].surfaceNormal),
-			ColorMap[map.walls[i].color] || ColorMap['black'],
+			ColorMap[map.walls[i].color] || ColorMap['white'],
 			map.walls[i].opacity || 1,
 			scene
 		));
@@ -98,10 +97,6 @@ export function createGoals(scene: Scene, goals: Goal[], map: any)
 
 export function createBalls(scene: Scene, balls: Ball[], map: any)
 {
-	if (map.balls == null || map.balls.length == 0)
-	{
-		throw new Error('Map must have at least one ball.');
-	}
 	for (let i = 0; map.balls[i]; i++)
 	{
 		balls.push(new Ball
@@ -125,7 +120,6 @@ export function createPaddles(scene: Scene, paddles: Paddle[], mapGoals: any[])
 		const normal = jsonToVector3(mapGoals[i].surfaceNormal);
 		const paddlePos = goalPos.add(normal.scale(2));
 
-		console.log('paddle pos', paddlePos);
 		paddles.push(new Paddle
 			(dimensions,
 			paddlePos,
@@ -200,8 +194,8 @@ export function createScoreboard(scoreboard: TextBlock[], players: Player[])
 		textBlock.fontSize = 30;
 		textBlock.top = `${i * 35 - canvas.height / 2 + 20}px`;
 		textBlock.left = `${-(canvas.width / 2) + 100}px`;
-		textBlock.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
-		textBlock.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+		// textBlock.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+		// textBlock.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
 		advancedTexture.addControl(textBlock);
 		scoreboard.push(textBlock);
 	}
