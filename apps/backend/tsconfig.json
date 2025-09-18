@@ -1,5 +1,5 @@
 {
-  "extends":"@repo/tsconfig/tsconfig.base.json", /* Extend the base TypeScript configuration */ 
+  "extends": "@repo/tsconfig/tsconfig.base.json" /* Extend the base TypeScript configuration */,
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist"

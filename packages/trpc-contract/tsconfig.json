@@ -1,14 +1,9 @@
 {
-  "extends": "@repo/tsconfig/tsconfig.base.json", /* Extend the base TypeScript configuration */
+  "extends": "@repo/tsconfig/tsconfig.base.json" /* Extend the base TypeScript configuration */,
   "compilerOptions": {
-    "rootDir": "./src", /* Specify the root folder within your source files. */
-    "outDir": "./dist", /* Specify an output folder for all emitted files. */
+    "rootDir": "./src" /* Specify the root folder within your source files. */,
+    "outDir": "./dist" /* Specify an output folder for all emitted files. */
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

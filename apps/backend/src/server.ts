@@ -6,7 +6,7 @@ import websocket from '@fastify/websocket';
 import { setupGoogleAuthRoutes } from './auth/google';
 // Create a Fastify instance
 const fastifyInstance = Fastify({
-	logger: true,
+  logger: true,
 });
 
 /**
@@ -17,23 +17,23 @@ const fastifyInstance = Fastify({
 fastifyInstance.register(websocket);
 
 fastifyInstance.register(fastifyTRPCPlugin, {
-	prefix: '/trpc',
-	useWSS: true,
-	keepAlive: {
-		enabled: true,
-		pingMs: 30000,
-		pongWaitMs: 5000,
-	},
-	trpcOptions: { router: appRouter, createContext: createTRPCContext },
+  prefix: '/trpc',
+  useWSS: true,
+  keepAlive: {
+    enabled: true,
+    pingMs: 30000,
+    pongWaitMs: 5000,
+  },
+  trpcOptions: { router: appRouter, createContext: createTRPCContext },
 });
 
 fastifyInstance.register(import('@fastify/cors'), {
-	origin: ['http://localhost:3000', 'http://localhost:8080'], // allow frontend origins
-	credentials: true,
+  origin: ['http://localhost:3000', 'http://localhost:8080'], // allow frontend origins
+  credentials: true,
 });
 
 setupGoogleAuthRoutes(fastifyInstance);
 
 export function buildServer() {
-	return fastifyInstance;
+  return fastifyInstance;
 }

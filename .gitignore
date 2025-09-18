@@ -11,6 +11,7 @@ pids
 *dist/
 *.env
 *.db
+.idea
 
 # node-waf configuration
 .lock-wscript
@@ -54,3 +55,6 @@ web_modules/
 
 # DB
 database.sqlite
+
+# Drizzle directory
+drizzle/
