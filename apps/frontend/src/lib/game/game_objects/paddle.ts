@@ -1,7 +1,6 @@
 import { Ball, Wall, rotateVector } from '../../index';
 import { StandardMaterial, Color3, Vector3, MeshBuilder, Mesh,
-	PhysicsShapeType, PhysicsAggregate, PhysicsMotionType, Scene,
-	Quaternion } from '@babylonjs/core';
+	PhysicsShapeType, PhysicsAggregate, PhysicsMotionType, Scene } from '@babylonjs/core';
 
 const offset = 0.3;
 
@@ -31,10 +30,6 @@ export class Paddle
 		this.mesh.position.y = dimensions.y / 2;
 		this.velocity = 0;
 		this.upDirection = rotateVector(surfaceNorm, -Math.PI / 2);
-		
-		// const angle = Math.atan2(surfaceNorm.x, surfaceNorm.z) + Math.PI / 2;
-		// this.mesh.rotationQuaternion = Quaternion.RotationAxis(Vector3.Up(), angle);
-
 		this.mesh.rotate(Vector3.Up(), Math.atan2(surfaceNorm.x, surfaceNorm.z) + Math.PI / 2);
 
 		this.aggregate = new PhysicsAggregate(

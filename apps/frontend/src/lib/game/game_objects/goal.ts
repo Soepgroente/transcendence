@@ -37,7 +37,7 @@ export class Goal
 		this.plate.position = goalpos;
 		this.plate.position.y = Goal.height / 2;
 		this.plate.rotate(Vector3.Up(), Math.atan2(normalDir.x, normalDir.z) + Math.PI / 2);
-
+		
 		this.aggregate = new PhysicsAggregate(
 			this.plate,
 			PhysicsShapeType.BOX,
@@ -45,7 +45,7 @@ export class Goal
 			scene
 		);
 		const mat = new StandardMaterial('goalMat', scene);
-
+		
 		mat.diffuseColor = clr;
 		mat.ambientColor = clr;
 		mat.alpha = 0.4;

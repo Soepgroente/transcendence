@@ -61,7 +61,6 @@ export function createWalls(scene: Scene, walls: Wall[], map: any)
 	}
 	for (let i = 0; i < map.walls.length; i++)
 	{
-		console.log('hello');
 		walls.push(new Wall
 		(
 			jsonToVector3(map.walls[i].dimensions),
@@ -80,7 +79,6 @@ export function createGoals(scene: Scene, goals: Goal[], map: any)
 	{
 		throw new Error('Map cannot have more than 6 players.');
 	}
-	console.log(map.goals);
 	for (let i = 0; i < map.goals.length; i++)
 	{
 		goals.push(new Goal
@@ -125,7 +123,6 @@ export function createPaddles(scene: Scene, paddles: Paddle[], mapGoals: any[])
 		const normal = jsonToVector3(mapGoals[i].surfaceNormal);
 		const paddlePos = goalPos.add(normal.scale(2));
 
-		console.log('paddle pos', paddlePos);
 		paddles.push(new Paddle
 			(dimensions,
 			paddlePos,
@@ -180,10 +177,10 @@ export function createScoreboard(scoreboard: TextBlock[], players: Player[])
 	const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 	const advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI('Scores');
 	let background = new Rectangle();
-	background.widthInPixels = 200;
+	background.widthInPixels = canvas.width / 10;
 	background.heightInPixels = 35 * players.length + 10;
 	background.cornerRadius = 10;
-	background.color = 'black';
+	background.color = 'yellow';
 	background.thickness = 2;
 	background.background = 'rgba(0, 0, 0, 0.8)';
 	background.isVisible = true;
