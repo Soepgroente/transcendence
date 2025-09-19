@@ -95,6 +95,5 @@ export class GameStateManager extends EventEmitter {
         break;
     }
     this.gameStates.set(action.matchId, currentState);
-    this.notifySubs(action.matchId, currentState);
   }
 }

@@ -1,7 +1,7 @@
 import { Wall, Ball, Paddle, createSurroundingWalls,
 		createWalls, createBalls, createPlayers, createGoals,
 		createGround, createPaddles, createScoreboard, Player, Goal, jsonToVector2,
-		jsonToVector3, GameMenu, ColorMap, Colors } from '../../index';
+		GameMenu, Colors } from '../../index';
 import { CreateStreamingSoundAsync, CreateAudioEngineAsync, StreamingSound,
 		Engine, Scene, FreeCamera, Color3, Vector3, HemisphericLight,
 		HavokPlugin, StandardMaterial, Layer, PhysicsViewer } from '@babylonjs/core';
@@ -50,12 +50,25 @@ export class Game
 		console.log('Game started');
 	}
 
-	keyEvents()
+	/* Up is +1, down is -1, nothing or both pressed is 0 */
+
+	keyEvents(): number
 	{
-		for (let i = 0; i < this.players.length; i++)
-		{
-			this.players[i].checkForActions(this.keys, this.walls);
-		}
+		const up = Boolean(
+			this.keys['ArrowUp'] ||
+			this.keys['w'] ||
+			this.keys['ArrowRight'] ||
+			this.keys['d']
+		);
+
+		const down = Boolean(
+			this.keys['ArrowDown'] ||
+			this.keys['s'] ||
+			this.keys['ArrowLeft'] ||
+			this.keys['a']
+		);
+
+		return Number(up) - Number(down);
 	}
 
 	private async loadSounds()
@@ -119,7 +132,7 @@ export class Game
 		scene.enablePhysics(new Vector3(0, -10, 0), havokPlugin);
 		const hemiLight = new HemisphericLight('hemiLight', new Vector3(0, 10, 0), scene);
 		hemiLight.intensity = 0.6;
-		
+
 		this.dimensions = jsonToVector2(map.dimensions);
 		const cameraHeight = Math.max(this.dimensions[0], this.dimensions[1]) + 10;
 		const camera = new FreeCamera('camera1', new Vector3(0, cameraHeight, 0), scene);
@@ -182,31 +195,12 @@ export class Game
 		this.engine.stopRenderLoop();
 	}
 
-	private resumeGame()
-	{
-		this.gameIsRunning = true;
-		this.engine.runRenderLoop(this.gameLoop.bind(this));
-	}
-
-	toggleGamePause()
-	{
-		if (this.gameIsRunning == true)
-		{
-			this.pauseGame();
-		}
-		else
-		{
-			this.resumeGame();
-		}
-	}
-
 	run()
 	{
 		this.pauseGame();
 		this.showCountdown(this.scene, () =>
 		{
-			new GameMenu(this.scene, this);
-			this.resumeGame();
+			this.engine.runRenderLoop(this.gameLoop.bind(this));
 		});
 	}
 
@@ -241,31 +235,15 @@ export class Game
 		}
 		next();
 	}
-	const players = []
-	checkForPlayerInputs()
-	{
-		for (let i = 0; i < this.playerCount; i++)
-		{
-			[-1 , 0, 1, 1, -1, 0]
-			[update paddle positions]
-		}
-	}
-	PlayerAction = [0,1,2,3]
-	
+
 	private gameLoop()
 	{
-		
 		let scored = false;
-		this.PlayerAction
 
-		for (const Action in this.PlayerAction)
-		{
-			[move paddle accordingly]
-		}
-
+		receiveServerUpdates();
 		if (this.gameIsRunning == true)
 		{
-			this.keyEvents();
+			sendInputToServer(this.keyEvents());
 			for (let i = 0; i < this.balls.length; i++)
 			{
 				for (let j = 0; j < this.goals.length; j++)
@@ -307,10 +285,6 @@ export class Game
 			}
 		}
 		this.scene.render();
-		this.getAllData();
-		this.sendDataToPlayers();
-		    this.notifySubs(action.matchId, currentState);
-
 	}
 
 	dispose()
@@ -363,4 +337,3 @@ export async function destroyGame(game: Game)
 {
 	game.dispose();
 }
-

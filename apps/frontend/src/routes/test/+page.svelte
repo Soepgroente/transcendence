@@ -52,13 +52,13 @@
   }
 
   // Send ready action
-  async function sendReady(id: number) {
+  async function sendReady() {
     try {
       console.log('Sending ready action...');
       const result = await trpc.game.sentPlayerAction.mutate({
         matchId,
         playerId: id,
-        action: 'ready',
+        action: '-1',
       });
       console.log(
         `Ready action sent for player ${id}: ${JSON.stringify(result)}`,

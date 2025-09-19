@@ -14,7 +14,7 @@ export const gameRouter = createRouter({
    */
   //temporary make it publicProcedure
   initializeMatch: publicProcedure
-    .input(z.object({ matchId: z.number() }))
+    .input(z.object({ matchId: z.number() }))// match name
     .mutation(async ({ input, ctx }) => {
       try {
         const players = await ctx.services.dbServices.getMatchPlayers(
@@ -86,7 +86,7 @@ export const gameRouter = createRouter({
       const action: PlayerAction = {
         ...input,
         // playerId: ctx.userToken.id,
-        playerId: input.playerId, // Temporary hardcoded playerId for testing
+        // playerId: input.playerId, // Temporary hardcoded playerId for testing
       };
       const playerExists = await ctx.services.dbServices.playerExistsInMatch(
         action.matchId,

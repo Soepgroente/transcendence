@@ -4,7 +4,7 @@ import { config } from 'dotenv';
 config(); // Load environment variables from .env file
 const secret = process.env.JWT_SECRET;
 if (!secret) {
-  throw new Error('JWT_SECTRET is not defined in the environment variables');
+  throw new Error('JWT_SECRET is not defined in the environment variables');
 }
 
 function sign(userId: number, email: string): string {
