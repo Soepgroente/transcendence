@@ -1,16 +1,15 @@
 import { Wall, Ball, Paddle, createSurroundingWalls,
 		createWalls, createBalls, createPlayers, createGoals,
 		createGround, createPaddles, createScoreboard, Player, Goal, jsonToVector2,
-		GameMenu, Colors } from '../../index';
+		Colors } from '../../index';
 import { CreateStreamingSoundAsync, CreateAudioEngineAsync, StreamingSound,
 		Engine, Scene, FreeCamera, Color3, Vector3, HemisphericLight,
 		HavokPlugin, StandardMaterial, Layer, PhysicsViewer } from '@babylonjs/core';
 import { TextBlock, AdvancedDynamicTexture } from '@babylonjs/gui';
 import type { AudioEngineV2 } from '@babylonjs/core';
+import type { GameState2 } from '../../index';
 
-const maxPlayerCount = 6;
-
-export class Game
+export class ClientGame
 {
 	private engine: Engine;
 	private scene: Scene;
@@ -28,6 +27,7 @@ export class Game
 	private walls: Wall[] = [];
 	private goals: Goal[] = [];
 	private playerCount: number = 0;
+	private lastState: GameState2 | null = null;
 
 	private static wallhitSound: StreamingSound;
 	private static paddlehitSound: StreamingSound;
@@ -75,23 +75,23 @@ export class Game
 	{
 		try
 		{
-			Game.audioEngine = await CreateAudioEngineAsync();
-			Game.audioEngine.volume = 0.5;
-			Game.music = await CreateStreamingSoundAsync('music', 'sounds/frogs.mp3');
-			Game.wallhitSound = await CreateStreamingSoundAsync('wallhit', 'sounds/wallhit.wav');
-			Game.paddlehitSound = await CreateStreamingSoundAsync('paddlehit', 'sounds/paddlehit.wav');
-			Game.paddlehitSound = await CreateStreamingSoundAsync('paddlehit', 'sounds/paddlehit.wav');
-			Game.playerOutSound = await CreateStreamingSoundAsync('playerout', 'sounds/playerout.wav');
-			Game.victorySound = await CreateStreamingSoundAsync('victory', 'sounds/victory.wav');
-			Game.paddlehitSound.maxInstances = 1;
-			Game.wallhitSound.maxInstances = 1;
+			ClientGame.audioEngine = await CreateAudioEngineAsync();
+			ClientGame.audioEngine.volume = 0.5;
+			ClientGame.music = await CreateStreamingSoundAsync('music', 'sounds/frogs.mp3');
+			ClientGame.wallhitSound = await CreateStreamingSoundAsync('wallhit', 'sounds/wallhit.wav');
+			ClientGame.paddlehitSound = await CreateStreamingSoundAsync('paddlehit', 'sounds/paddlehit.wav');
+			ClientGame.paddlehitSound = await CreateStreamingSoundAsync('paddlehit', 'sounds/paddlehit.wav');
+			ClientGame.playerOutSound = await CreateStreamingSoundAsync('playerout', 'sounds/playerout.wav');
+			ClientGame.victorySound = await CreateStreamingSoundAsync('victory', 'sounds/victory.wav');
+			ClientGame.paddlehitSound.maxInstances = 1;
+			ClientGame.wallhitSound.maxInstances = 1;
 
-			Game.paddlehitSound.setVolume(0.6);
-			Game.wallhitSound.setVolume(0.6);
-			Game.playerOutSound.setVolume(0.6);
-			Game.music.play();
+			ClientGame.paddlehitSound.setVolume(0.6);
+			ClientGame.wallhitSound.setVolume(0.6);
+			ClientGame.playerOutSound.setVolume(0.6);
+			ClientGame.music.play();
 
-			await Game.audioEngine.unlockAsync();
+			await ClientGame.audioEngine.unlockAsync();
 		}
 		catch (error)
 		{
@@ -168,7 +168,7 @@ export class Game
 	private victory()
 	{
 		this.pauseGame();
-		Game.playVictorySound();
+		ClientGame.playVictorySound();
 		
 		const advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI('victoryUI', true, this.scene);
 		const victoryText = new TextBlock();
@@ -236,54 +236,52 @@ export class Game
 		next();
 	}
 
-	private gameLoop()
+	private updateGameState()
 	{
-		let scored = false;
 
-		receiveServerUpdates();
-		if (this.gameIsRunning == true)
+	}
+
+	private updateScoreboard()
+	{
+		const lives = this.lastState.lives;
+
+		for (let i = 0; i < this.players.length; i++)
 		{
-			sendInputToServer(this.keyEvents());
-			for (let i = 0; i < this.balls.length; i++)
+			if (this.players[i].getLives() != lives[i])
 			{
-				for (let j = 0; j < this.goals.length; j++)
-				{
-					if (this.goals[j].score(this.balls[i]) == true)
-					{
-						this.players[j].loseLife();
-						if (this.players[j].isAlive() == false)
-						{
-							this.playerCount--;
-						}
-						this.scoreboard[j].text = `Player ${this.players[j].ID}: ${this.players[j].getLives()}`;
-						if (this.playerCount == 1)
-						{
-							this.victory();
-							return;
-						}
-						Game.playerOutSound.play();
-						this.balls[i].destroy();
-						this.balls.splice(i, 1);
-						i--;
-						scored = true;
-						break;
-					}
-				}
-				if (scored == false)
-				{
-					this.balls[i].update(this.paddles, this.walls);
-				}
-				if (this.balls.length == 0)
-				{
-					for (let j = 0; j < this.players.length; j++)
-					{
-						this.paddles[j].reset();
-					}
-					createBalls(this.scene, this.balls, this.jsonMap);
-				}
-				scored = false;
+				this.players[i].loseLife();
+				this.scoreboard[i].text = `Player ${this.players[i].ID}: ${this.players[i].getLives()}`;
 			}
 		}
+	}
+
+	private updateBalls()
+	{
+		const ballUpdates = this.lastState.balls;
+
+		for (let i = 0; i < ballUpdates.length; i++)
+		{
+			this.balls[i].update(ballUpdates[i].location.x, ballUpdates[i].location.z);
+		}
+	}
+
+	private updatePaddles()
+	{
+		const playerUpdates = this.lastState.paddles;
+		
+		for (let i = 0; i < playerUpdates.length; i++)
+		{
+			this.paddles[i].update(playerUpdates[i].location.x, playerUpdates[i].location.z);
+		}
+	}
+
+	private gameLoop()
+	{
+		this.updateGameState();
+		this.updateBalls();
+		this.updatePaddles();
+		this.updateScoreboard();
+
 		this.scene.render();
 	}
 
@@ -300,24 +298,16 @@ export class Game
 		this.walls = [];
 		this.goals = [];
 		this.scoreboard = [];
-		Game.audioEngine.dispose();
+		ClientGame.audioEngine.dispose();
 		this.gameIsRunning = false;
 		console.log('Game data deleted.');
 	}
 
-	getPaddles(): Paddle[] {return this.paddles;}
-	getBalls(): Ball[] {return this.balls;}
-	getWalls(): Wall[] {return this.walls;}
-	getGoals(): Goal[] {return this.goals;}
-	getPlayers(): Player[] {return this.players;}
-	getScene(): Scene {return this.scene;}
-	gameRunning(): boolean {return this.gameIsRunning;}
-
-	static playBallHitSound() { Game.paddlehitSound.play(); }
-	static playPaddleHitSound() { Game.paddlehitSound.play(); }
-	static playPlayerOutSound() { Game.playerOutSound.play(); }
-	static playVictorySound() { Game.victorySound.play(); }
-	static playWallHitSound() { Game.wallhitSound.play(); }
+	static playBallHitSound() { ClientGame.paddlehitSound.play(); }
+	static playPaddleHitSound() { ClientGame.paddlehitSound.play(); }
+	static playPlayerOutSound() { ClientGame.playerOutSound.play(); }
+	static playVictorySound() { ClientGame.victorySound.play(); }
+	static playWallHitSound() { ClientGame.wallhitSound.play(); }
 }
 
 async function loadFileText(filePath: string): Promise<string>
@@ -333,7 +323,7 @@ async function loadFileText(filePath: string): Promise<string>
 
 /*	Destroys the resources associated with the game	*/
 
-export async function destroyGame(game: Game)
+export async function destroyGame(game: ClientGame)
 {
 	game.dispose();
 }

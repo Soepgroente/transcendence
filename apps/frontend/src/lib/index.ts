@@ -1,18 +1,18 @@
 import { Color3, Vector3 } from "@babylonjs/core";
 
-export * from './game/game_objects/ball';
-export * from './game/game_objects/paddle';
-export * from './game/game_objects/wall';
-export * from './game/game_objects/player';
-export * from './game/game_objects/goal';
-export * from './game/game_objects/game';
-export * from './game/game_objects/game_menu';
-export * from './game/initialize';
-export * from './game/main';
+export * from './game_client/game_objects/ball';
+export * from './game_client/game_objects/paddle';
+export * from './game_client/game_objects/wall';
+export * from './game_client/game_objects/player';
+export * from './game_client/game_objects/goal';
+export * from './game_client/game_objects/client_game';
+export * from './game_client/initialize';
+export * from './game_client/main';
 export * from './map_editor/editor_objects/editor';
 export * from './map_editor/main';
 export * from './map_editor/maps';
 export * from './map_editor/editor_objects/objects';
+export { type GameState2, type GameState } from '@repo/trpc/src/types/gameState';
 
 export const Colors: { name: string, color: Color3 }[] =
 [

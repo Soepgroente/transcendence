@@ -241,27 +241,10 @@ export class Game
 		}
 		next();
 	}
-	const players = []
-	checkForPlayerInputs()
-	{
-		for (let i = 0; i < this.playerCount; i++)
-		{
-			[-1 , 0, 1, 1, -1, 0]
-			[update paddle positions]
-		}
-	}
-	PlayerAction = [0,1,2,3]
-	
+
 	private gameLoop()
 	{
-		
 		let scored = false;
-		this.PlayerAction
-
-		for (const Action in this.PlayerAction)
-		{
-			[move paddle accordingly]
-		}
 
 		if (this.gameIsRunning == true)
 		{
@@ -307,10 +290,6 @@ export class Game
 			}
 		}
 		this.scene.render();
-		this.getAllData();
-		this.sendDataToPlayers();
-		    this.notifySubs(action.matchId, currentState);
-
 	}
 
 	dispose()

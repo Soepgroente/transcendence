@@ -5,6 +5,6 @@
     "rootDir": "./src",
     "outDir": "./dist",
   },
-  "include": ["src/**/*", "mapIndexesScript.tsipt.mapIndexesScript.tsxesScript.ts"],
+  "include": ["src/**/*", "mapIndexesScript.tsipt.mapIndexesScript.tsxesScript.ts", "src/lib/Xgame"],
   "exclude": ["node_modules", "dist"]
 }

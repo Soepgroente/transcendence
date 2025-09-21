@@ -138,14 +138,7 @@ export function createPlayers(players: Player[], goals: Goal[], paddles: Paddle[
 	for (let i = 0; i < paddles.length; i++)
 	{
 		const player = new Player(`Player ${i + 1}`, i + 1, goals[i], paddles[i]);
-		switch (i)
-		{
-			case 0: player.setControls('ArrowUp', 'ArrowDown'); break;
-			case 1: player.setControls('w', 's'); break;
-			case 2: player.setControls('i', 'k'); break;
-			case 3: player.setControls('t', 'g'); break;
-			default: player.setControls('ArrowUp', 'ArrowDown'); break;
-		}
+
 		players.push(player);
 	}
 }

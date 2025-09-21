@@ -68,10 +68,3 @@ const state: GameState2 = {
 	paddles: [{ location: { x: 0, z: 0 } }, { location: { x: 0, z: 0 } }],
 	action: ['0', '1', '0', '0']
 };
-
-state.action = [0, 1];
-state.paddles[0] = paddles[0].exportPosition();
-state.paddles[0].location.x += state.action[0];
-state.paddles[1].location.x += state.action[1];
-
-console.log(state.paddles);

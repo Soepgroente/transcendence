@@ -1,5 +1,4 @@
-import { StandardMaterial, Color3, Vector3, MeshBuilder, Mesh, PhysicsShapeType, PhysicsAggregate, PointLight, Scene } from '@babylonjs/core';
-import { Ball } from '../../index';
+import { StandardMaterial, Color3, Vector3, MeshBuilder, Mesh, PointLight, Scene } from '@babylonjs/core';
 
 const goalPostDiameter = 0.5;
 
@@ -9,11 +8,7 @@ export class Goal
 	private post2:		Mesh;
 	private plate:		Mesh;
 	private lights:		PointLight[] = [];
-	private isAlive:	boolean;
-	private normal:		Vector3;
 	private color:		Color3;
-	private scoringCooldown: number;
-	private aggregate:	PhysicsAggregate;
 
 	private static goalPostMaterial: StandardMaterial;
 	private static eliminatedMaterial: StandardMaterial;
@@ -22,9 +17,6 @@ export class Goal
 
 	constructor(goalpos: Vector3, dimensions: Vector3, post1: Vector3, post2: Vector3, clr: Color3, normalDir: Vector3, scene: Scene)
 	{
-		this.isAlive = true;
-		this.scoringCooldown = 0;
-		this.normal = normalDir;
 		this.color = clr;
 		this.post1 = this.createPost(post1, scene);
 		this.post2 = this.createPost(post2, scene);
@@ -38,12 +30,6 @@ export class Goal
 		this.plate.position.y = Goal.height / 2;
 		this.plate.rotate(Vector3.Up(), Math.atan2(normalDir.x, normalDir.z) + Math.PI / 2);
 		
-		this.aggregate = new PhysicsAggregate(
-			this.plate,
-			PhysicsShapeType.BOX,
-			{ mass: 0, restitution: 1 },
-			scene
-		);
 		const mat = new StandardMaterial('goalMat', scene);
 		
 		mat.diffuseColor = clr;
@@ -60,12 +46,6 @@ export class Goal
 		post.material = Goal.goalPostMaterial;
 		post.position.y = Goal.height / 2;
 
-		new PhysicsAggregate(
-			post,
-			PhysicsShapeType.CYLINDER,
-			{ mass: 0, restitution: 1 },
-			scene
-		);
 		const light = new PointLight('goalLight', new Vector3(position.x, Goal.height, position.z), scene);
 
 		light.diffuse = this.color;
@@ -74,39 +54,6 @@ export class Goal
 		light.range = 25;
 		this.lights.push(light);
 		return post;
-	}
-
-	score(ball: Ball): boolean
-	{
-		if (this.isAlive == false)
-		{
-			return false;
-		}
-		if (this.plate.intersectsMesh(ball.getMesh(), false) == false)
-		{
-			return false;
-		}
-
-		if (this.scoringCooldown == 3)
-		{
-			this.scoringCooldown = 0;
-		}
-
-		if (this.scoringCooldown > 0)
-		{
-			this.scoringCooldown++;
-			return false;
-		}
-
-		const linearVelocity = ball.getDirection();
-
-		if (linearVelocity == null)
-		{
-			return false;
-		}
-		const ballDirection = linearVelocity.normalize();
-
-		return Vector3.Dot(ballDirection, this.normal) < 0;
 	}
 
 	getPlateMesh(): Mesh
@@ -133,9 +80,7 @@ export class Goal
 		{
 			light.dispose();
 		}
-		this.isAlive = false;
 	}
-	
 
 	static setEliminatedMaterial(mat: StandardMaterial)
 	{
