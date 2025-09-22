@@ -61,10 +61,3 @@ export interface Paddle
 {
 	location: { x: number; z: number };
 }
-
-const state: GameState2 = {
-	lives: [3, 3],
-	balls: [{ location: { x: 0, z: 0 } }],
-	paddles: [{ location: { x: 0, z: 0 } }, { location: { x: 0, z: 0 } }],
-	action: ['0', '1', '0', '0']
-};

@@ -8,7 +8,7 @@ import {
   playerExistsInMatch,
   matchExists,
 } from '../db/src/dbFunctions';
-import { GameStateManager } from '../game/game-state-manager';
+import { GameStateManager } from '../game_server/game-state-manager';
 import { TournamentService } from '../tournament/tournament';
 
 const disableJWT = true; //for development,

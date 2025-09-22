@@ -236,9 +236,10 @@ export class ClientGame
 		next();
 	}
 
-	private updateGameState()
+	private async updateGameState()
 	{
-
+		const serverInput = await loadServerInput((this.scene as any).socket) as string;
+		this.lastState = JSON.parse(serverInput) as GameState2;
 	}
 
 	private updateScoreboard()
@@ -281,7 +282,6 @@ export class ClientGame
 		this.updateBalls();
 		this.updatePaddles();
 		this.updateScoreboard();
-
 		this.scene.render();
 	}
 
@@ -319,6 +319,21 @@ async function loadFileText(filePath: string): Promise<string>
 		throw new Error(`Failed to load file: ${filePath}`);
 	}
 	return response.text();
+}
+
+async function loadServerInput(socket: WebSocket): Promise<string>
+{
+	return new Promise((resolve, reject) =>
+	{
+		socket.onmessage = (event) =>
+		{
+			resolve(event.data);
+		};
+		socket.onerror = (event) =>
+		{
+			reject(new Error('WebSocket error'));
+		};
+	});
 }
 
 /*	Destroys the resources associated with the game	*/
