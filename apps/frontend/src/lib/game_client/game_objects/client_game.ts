@@ -7,7 +7,7 @@ import { CreateStreamingSoundAsync, CreateAudioEngineAsync, StreamingSound,
 		HavokPlugin, StandardMaterial, Layer, PhysicsViewer } from '@babylonjs/core';
 import { TextBlock, AdvancedDynamicTexture } from '@babylonjs/gui';
 import type { AudioEngineV2 } from '@babylonjs/core';
-import type { GameState2 } from '../../index';
+import type { GameState } from '../../index';
 
 export class ClientGame
 {
@@ -27,7 +27,7 @@ export class ClientGame
 	private walls: Wall[] = [];
 	private goals: Goal[] = [];
 	private playerCount: number = 0;
-	private lastState: GameState2 | null = null;
+	private lastState: GameState | null = null;
 
 	private static wallhitSound: StreamingSound;
 	private static paddlehitSound: StreamingSound;
@@ -239,16 +239,16 @@ export class ClientGame
 	private async updateGameState()
 	{
 		const serverInput = await loadServerInput((this.scene as any).socket) as string;
-		this.lastState = JSON.parse(serverInput) as GameState2;
+		this.lastState = JSON.parse(serverInput) as GameState;
 	}
 
 	private updateScoreboard()
 	{
-		const lives = this.lastState.lives;
+		const players = this.lastState.players;
 
 		for (let i = 0; i < this.players.length; i++)
 		{
-			if (this.players[i].getLives() != lives[i])
+			if (this.players[i].getLives() != players[i].lives)
 			{
 				this.players[i].loseLife();
 				this.scoreboard[i].text = `Player ${this.players[i].ID}: ${this.players[i].getLives()}`;
@@ -262,17 +262,17 @@ export class ClientGame
 
 		for (let i = 0; i < ballUpdates.length; i++)
 		{
-			this.balls[i].update(ballUpdates[i].location.x, ballUpdates[i].location.z);
+			this.balls[i].update(ballUpdates[i].x, ballUpdates[i].z);
 		}
 	}
 
 	private updatePaddles()
 	{
-		const playerUpdates = this.lastState.paddles;
+		const playerUpdates = this.lastState.players;
 		
 		for (let i = 0; i < playerUpdates.length; i++)
 		{
-			this.paddles[i].update(playerUpdates[i].location.x, playerUpdates[i].location.z);
+			this.paddles[i].update(playerUpdates[i].position.x, playerUpdates[i].position.z);
 		}
 	}
 

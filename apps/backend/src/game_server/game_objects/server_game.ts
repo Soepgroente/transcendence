@@ -1,9 +1,11 @@
-import { Wall, Ball, Paddle, createSurroundingWalls,
+import { initTRPC } from '@trpc/server';
+import { Wall, Ball, Paddle, createSurroundingWalls, GameState,
 		createWalls, createBalls, createPlayers, createGoals,
-		createGround, createPaddles, Player, Goal, jsonToVector2 } from '../index';
+		createGround, createPaddles, Player, Goal, jsonToVector2, type GamePos } from '../index';
 import { Engine, Scene, Vector3, HavokPlugin } from '@babylonjs/core';
 
 const maxPlayerCount = 6;
+const playerLives = 3;
 
 export class ServerGame
 {
@@ -13,9 +15,10 @@ export class ServerGame
 	private dimensions: [number, number];
 	private gameIsRunning: boolean;
 	private	gameCanvas: HTMLCanvasElement;
+	private gameState: GameState;
 	
 	private jsonMap: any;
-	private scoreboard: number[] = [];
+	private clients: { id: number; alias: string }[];
 	private players: Player[] = [];	
 	private paddles: Paddle[] = [];
 	private balls: Ball[] = [];
@@ -23,7 +26,7 @@ export class ServerGame
 	private goals: Goal[] = [];
 	private playerCount: number = 0;
 
-	constructor(havokInstance: any)
+	constructor(havokInstance: any, matchID: number, clients: { id: number; alias: string }[])
 	{
 		this.gameCanvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 		this.havokInstance = havokInstance;
@@ -31,6 +34,8 @@ export class ServerGame
 		this.gameIsRunning = true;
 		this.engine = new Engine(this.gameCanvas, true, {antialias: true});
 		this.scene = new Scene(this.engine);
+		this.gameState = new GameState(matchID);
+		this.clients = clients;
 		console.log('Game started');
 	}
 
@@ -45,7 +50,44 @@ export class ServerGame
 			throw new Error('Invalid map format');
 		}
 		this.createScene(map);
+		this.initGameState();
 		this.jsonMap = map;
+	}
+
+	private initGameState()
+	{
+		if (this.players.length < 2)
+		{
+			throw new Error('Map must have at least 2 players.');
+		}
+		if (this.players.length > maxPlayerCount)
+		{
+			throw new Error(`Map cannot have more than ${maxPlayerCount} players.`);
+		}
+		const state = this.gameState;
+		const players = this.clients;
+
+		for (let i = 0; i < this.players.length; i++)
+		{
+			state.players.push(
+			{
+				id: players[i].id,
+				alias: players[i].alias,
+				lives: 3,
+				position: this.paddles[i].getPosition(),
+				isAlive: true,
+				isReady: false,
+				action: []
+			});
+		}
+		state.set(matchId, initialState);
+		this.notifySubs(matchId, initialState);
+
+		for (let j = 0; j < this.balls.length; j++)
+		{
+			state.balls.push(this.balls[j].getPosition());
+		}
+		state.lastUpdate = Date.now();
 	}
 
 	private createScene(map: any)
@@ -64,27 +106,11 @@ export class ServerGame
 		createPaddles(scene, this.paddles, map.goals);
 		createPlayers(this.players, this.goals, this.paddles);
 
-		for (const player of this.players)
-		{
-			this.scoreboard.push(player.getLives());
-		}
 		this.scene = scene;
 		this.playerCount = this.players.length;
-
-		// Debug Physics Viewer
-		// scene.onDataLoadedObservable.addOnce(() => {
-		// const viewer = new PhysicsViewer(scene);
-		// scene.meshes.forEach(m =>
-		// 	{
-		// 		if ((m as any).physicsBody || (m as any).physicsAggregate)
-		// 		{
-		// 			viewer.showBody((m as any).physicsBody || (m as any).physicsAggregate.body);
-		// 		}
-		// 	});
-		// });
 	}
 
-	private resumeGame()
+	private startGame()
 	{
 		this.gameIsRunning = true;
 		this.engine.runRenderLoop(this.gameLoop.bind(this));
@@ -100,13 +126,61 @@ export class ServerGame
 	run()
 	{
 		// wait for everyone to be ready
-		this.resumeGame();
+		this.startGame();
+	}
+
+	private updateGameState()
+	{
+		const state = this.gameState;
+		
+		for (let i = 0; i < this.players.length; i++)
+		{
+			state.players[i].position = this.paddles[i].getPosition();
+			state.players[i].lives = this.players[i].getLives();
+			if (state.players[i].lives <= 0)
+			{
+				state.players[i].isAlive = false;
+			}
+		}
+		state.balls = [];
+		for (let i = 0; i < this.balls.length; i++)
+		{
+			state.balls.push(this.balls[i].getPosition());
+		}
+		state.lastUpdate = Date.now();
+	}
+
+	private updatePlayerInput()
+	{
+		const state = this.gameState;
+		let direction = 0;
+
+		for (let i = 0; i < state.players.length; i++)
+		{
+			switch (state.players[i].action[0].action)
+			{
+				case '1':
+					direction = 1;
+					break;
+				case '-1':
+					direction = -1;
+					break;
+				case '0':
+					direction = 0;
+					break;
+				default:
+					direction = 0;
+					break;
+			}
+			this.paddles[i].update(direction, direction != 0 ? true : false, this.walls);
+		}
 	}
 
 	private gameLoop()
 	{
 		let scored = false;
 
+		this.updatePlayerInput();
 		if (this.gameIsRunning == true)
 		{
 			for (let i = 0; i < this.balls.length; i++)
@@ -116,7 +190,6 @@ export class ServerGame
 					if (this.goals[j].score(this.balls[i]) == true)
 					{
 						this.players[j].loseLife();
-						this.scoreboard[j]--;
 						if (this.players[j].isAlive() == false)
 						{
 							this.playerCount--;
@@ -148,7 +221,7 @@ export class ServerGame
 				scored = false;
 			}
 		}
-		this.update();
+		this.updateGameState();
 	}
 
 	dispose()
@@ -162,18 +235,9 @@ export class ServerGame
 		this.balls = [];
 		this.walls = [];
 		this.goals = [];
-		this.scoreboard = [];
 		this.gameIsRunning = false;
 		console.log('Game data deleted.');
 	}
-
-	getPaddles(): Paddle[] {return this.paddles;}
-	getBalls(): Ball[] {return this.balls;}
-	getWalls(): Wall[] {return this.walls;}
-	getGoals(): Goal[] {return this.goals;}
-	getPlayers(): Player[] {return this.players;}
-	getScene(): Scene {return this.scene;}
-	gameRunning(): boolean {return this.gameIsRunning;}
 }
 
 async function loadFileText(filePath: string): Promise<string>

@@ -8,7 +8,6 @@ export class Ball
 	private diameter:	number;
 	private aggregate:	PhysicsAggregate;
 	private speed: 		number;
-	private lasthit:	number;
 	
 	private static baseSpeed: number = 10;
 	private static speedIncrement: number = 0.3;
@@ -25,7 +24,6 @@ export class Ball
 			scene
 		);
 		this.diameter = _diameter;
-		this.lasthit = -1;
 		this.speed = Ball.baseSpeed;
 		this.velocity = Vector3.Zero();
 		this.aggregate.body.setLinearVelocity(this.randomVector().scale(Math.random() * Ball.baseSpeed));
@@ -53,7 +51,6 @@ export class Ball
 		{
 			if (this.mesh.intersectsMesh(paddles[pad].getMesh(), false) == true)
 			{
-				this.lasthit = pad;
 				this.speed += Ball.speedIncrement;
 			}
 		}
@@ -94,11 +91,6 @@ export class Ball
 		return this.mesh;
 	}
 
-	lastHit(): number
-	{
-		return this.lasthit;
-	}
-
 	getDirection(): Vector3
 	{
 		return this.velocity.normalize();
@@ -108,5 +100,10 @@ export class Ball
 	{
 		this.aggregate.body.setLinearVelocity(movement.scale(this.speed));
 		this.velocity = movement.scale(this.speed);
+	}
+
+	getPosition(): { x: number; z: number }
+	{
+		return { x: this.mesh.position.x, z: this.mesh.position.z };
 	}
 }

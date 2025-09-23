@@ -1,4 +1,4 @@
-import { Paddle, Goal, Wall } from '../index';
+import { Paddle, Goal } from '../index';
 
 export class Player
 {

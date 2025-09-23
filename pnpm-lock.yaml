@@ -7,6 +7,13 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@babylonjs/core':
+        specifier: ^8.22.2
+        version: 8.22.2
+      '@babylonjs/loaders':
+        specifier: ^8.28.2
+        version: 8.28.2(@babylonjs/core@8.22.2)(babylonjs-gltf2interface@8.28.2)
     devDependencies:
       '@eslint/js':
         specifier: ^9.32.0
@@ -183,6 +190,12 @@ packages:
 
   '@babylonjs/havok@1.3.10':
     resolution: {integrity: sha512-ddF0LPBVmg+rmPaMmwTPA9FcHyUnrSsQqFoBbYbN51WMhEJQ+7gRFW3J5lML6lN9M/fbknh6bh1ZirZ2bU2B/w==}
+
+  '@babylonjs/loaders@8.28.2':
+    resolution: {integrity: sha512-uVEYyuaE/3LFUHezkRpNV0mL48XnnpIy6tKK4Qu8xLtGLKfRpl7VHhi9s/L/MC+S2lKHMTlTQhJyBgOpSfXI6Q==}
+    peerDependencies:
+      '@babylonjs/core': ^8.0.0
+      babylonjs-gltf2interface: ^8.0.0
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -1081,6 +1094,9 @@ packages:
   axobject-query@4.1.0:
     resolution: {integrity: sha512-qIj0G9wZbMGNLjLmg1PT6v2mE9AH2zlnADJD/2tC6E00hgmhUOfEB6greHPAfLRSufHqROIUTkw6E+M3lH0PTQ==}
     engines: {node: '>= 0.4'}
+
+  babylonjs-gltf2interface@8.28.2:
+    resolution: {integrity: sha512-TGusApjAPNkPhyyU/05FNoiEc9l85Kd4ZGHO/5hsRkLLYVXvmsqAEa9yGIVLhYM3Yezf/b1DFwMPvY1D/NEiVA==}
 
   babylonjs@8.22.2:
     resolution: {integrity: sha512-Ws13m3zSMdys7Nf6AM1eYm8cnTyCZXMy0UNJC6GiBypkpz1Ku9VcqxHn9smUJFwJY6dhvUZmntWy1NtSWicDOA==}
@@ -2232,6 +2248,11 @@ snapshots:
     dependencies:
       '@types/emscripten': 1.40.1
 
+  '@babylonjs/loaders@8.28.2(@babylonjs/core@8.22.2)(babylonjs-gltf2interface@8.28.2)':
+    dependencies:
+      '@babylonjs/core': 8.22.2
+      babylonjs-gltf2interface: 8.28.2
+
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
@@ -2979,6 +3000,8 @@ snapshots:
       fastq: 1.19.1
 
   axobject-query@4.1.0: {}
+
+  babylonjs-gltf2interface@8.28.2: {}
 
   babylonjs@8.22.2: {}
 

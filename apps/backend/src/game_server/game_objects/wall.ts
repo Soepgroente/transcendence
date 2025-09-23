@@ -23,11 +23,6 @@ export class Wall
 		);
 	}
 
-	getBody(): any
-	{
-		return this.aggregate.body;
-	}
-
 	getMesh(): Mesh
 	{
 		return this.mesh;

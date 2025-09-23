@@ -12,7 +12,7 @@ export * from './map_editor/editor_objects/editor';
 export * from './map_editor/main';
 export * from './map_editor/maps';
 export * from './map_editor/editor_objects/objects';
-export { type GameState2, type GameState } from '@repo/trpc/src/types/gameState';
+export { type GameState } from '@repo/trpc/src/types/gameState';
 
 export const Colors: { name: string, color: Color3 }[] =
 [

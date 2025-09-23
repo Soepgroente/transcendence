@@ -1,6 +1,6 @@
-import { Ball, Wall, rotateVector } from '../index';
-import { StandardMaterial, Vector3, MeshBuilder, Mesh,
-	PhysicsShapeType, PhysicsAggregate, PhysicsMotionType, Scene } from '@babylonjs/core';
+import { Ball, Wall, rotateVector, type GamePos } from '../index';
+import { Vector3, MeshBuilder, Mesh, PhysicsShapeType,
+		 PhysicsAggregate, PhysicsMotionType, Scene } from '@babylonjs/core';
 
 const offset = 0.3;
 
@@ -13,7 +13,6 @@ export class Paddle
 	private frozen:			boolean;
 	private upDirection:	Vector3;
 
-	private static eliminatedMaterial:	StandardMaterial;
 	private static maxSpeed:			number = 0.6;
 	private static acceleration:		number = 0.03;
 
@@ -44,7 +43,7 @@ export class Paddle
 		this.frozen = false;
 	}
 
-	move(walls: Wall[])
+	private move(walls: Wall[])
 	{
 		this.mesh.position.x += this.upDirection.x * this.velocity;
 		this.mesh.position.z += this.upDirection.z * this.velocity;
@@ -131,10 +130,14 @@ export class Paddle
 		return this.mesh.intersectsMesh(ball.getMesh(), false);
 	}
 
+	getPosition(): GamePos
+	{
+		return { x: this.mesh.position.x, z: this.mesh.position.z };
+	}
+
 	eliminate()
 	{
 		this.mesh.position = this.spawnPosition;
-		this.mesh.material = Paddle.eliminatedMaterial;
 		this.frozen = true;
 		this.aggregate.body.setLinearVelocity(Vector3.Zero());
 	}
