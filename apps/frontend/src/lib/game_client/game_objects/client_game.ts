@@ -18,7 +18,6 @@ export class ClientGame
 	private gameIsRunning: boolean;
 	private	gameCanvas: HTMLCanvasElement;
 	
-	private jsonMap: any;
 	private keys: Record<string, boolean> = {};
 	private scoreboard: TextBlock[] = [];
 	private players: Player[] = [];	
@@ -26,7 +25,6 @@ export class ClientGame
 	private balls: Ball[] = [];
 	private walls: Wall[] = [];
 	private goals: Goal[] = [];
-	private playerCount: number = 0;
 	private lastState: GameState | null = null;
 
 	private static wallhitSound: StreamingSound;
@@ -121,7 +119,6 @@ export class ClientGame
 		Goal.setEliminatedMaterial(eliminationMat);
 		Goal.createGoalPostMaterial(this.scene);
 		await this.loadSounds();
-		this.jsonMap = map;
 	}
 
 	private createScene(map: any)
@@ -150,7 +147,6 @@ export class ClientGame
 		const background = new Layer('background', 'backgrounds/volcano.jpg', scene, true);
 		background.isBackground = true;
 		this.scene = scene;
-		this.playerCount = this.players.length;
 	}
 
 	private victory()
@@ -183,11 +179,8 @@ export class ClientGame
 		this.engine.stopRenderLoop();
 	}
 
-	run()
+	private async waitForStart()
 	{
-		this.pauseGame();
-		// send confirmation to server that client is ready
-		
 		const advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI('waitingUI', true, this.scene);
 		const waitingText = new TextBlock();
 
@@ -200,29 +193,34 @@ export class ClientGame
 		waitingText.verticalAlignment = TextBlock.VERTICAL_ALIGNMENT_CENTER;
 		advancedTexture.addControl(waitingText);
 
-		const waitForStart = async () =>
+		while (true)
 		{
-			while (true)
-			{
-				// logic to check if the game should start
-				const serverInput = await loadServerInput((this.scene as any).socket) as string;
-				const data = JSON.parse(serverInput);
+			// logic to check if the game should start
+			const serverInput = await loadServerInput((this.scene as any).socket) as string;
+			const data = JSON.parse(serverInput);
 
-				if (data.start === true)
+			if (data.start === true)
+			{
+				advancedTexture.removeControl(waitingText);
+				advancedTexture.dispose();
+				this.showCountdown(this.scene, () =>
 				{
-					advancedTexture.removeControl(waitingText);
-					advancedTexture.dispose();
-					this.showCountdown(this.scene, () =>
-					{
-						this.engine.runRenderLoop(this.gameLoop.bind(this));
-					});
-					break;
-				}
-				// Optionally, add small delay to avoid spamming server
-				await new Promise(r => setTimeout(r, 100));
+					this.engine.runRenderLoop(this.gameLoop.bind(this));
+				});
+				break;
 			}
-		};
-		waitForStart();
+			// Optionally, add small delay to avoid spamming server
+			await new Promise(r => setTimeout(r, 100));
+		}
+	}
+
+	run()
+	{
+		this.pauseGame();
+		
+		// send confirmation to server that client is ready to roll		
+
+		this.waitForStart();
 	}
 
 	/* run()
@@ -312,7 +310,7 @@ export class ClientGame
 		this.updateBalls();
 		this.updatePaddles();
 		this.updateScoreboard();
-		// send key presses
+		// send key presses to server
 		this.scene.render();
 	}
 
