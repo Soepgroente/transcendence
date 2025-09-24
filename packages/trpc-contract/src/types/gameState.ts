@@ -40,6 +40,37 @@ export type Player = z.infer<typeof PlayerSchema>;
 export type GameState = z.infer<typeof GameStateSchema>;
 export type PlayerAction = z.infer<typeof PlayerActionSchema>; */
 
+/*	GameState should be created when "START" is pressed in the lobby */
+
+export class GameState
+{
+	matchId: number;
+	status: 'waiting' | 'in_progress' | 'finished';
+	players: Player[] = [];
+	lastUpdate: number;
+	balls: GamePos[] = [];
+
+	constructor(matchId: number, players: { id: number; alias: string }[])
+	{
+		this.matchId = matchId;
+		this.status = 'waiting';
+		this.lastUpdate = Date.now();
+		for (const player of players)
+		{
+			this.players.push(
+			{
+				id: player.id,
+				alias: player.alias,
+				lives: 3,
+				position: { x: 0, z: 0 },
+				isAlive: true,
+				isReady: false,
+				action: []
+			});
+		}
+	}
+};
+
 export interface Player
 {
 	id: number;
@@ -49,20 +80,6 @@ export interface Player
 	isAlive: boolean;
 	isReady: boolean;
 	action: PlayerAction[];
-};
-
-export class GameState
-{
-	matchId: number = 0;
-	status: 'waiting' | 'in_progress' | 'paused' | 'finished' = 'waiting';
-	players: Player[] = [];
-	lastUpdate: number = 0;
-	balls: GamePos[] = [];
-
-	constructor(matchId: number)
-	{
-		this.matchId = matchId;
-	}
 };
 
 export interface PlayerAction

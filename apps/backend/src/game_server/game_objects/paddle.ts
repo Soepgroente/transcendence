@@ -84,13 +84,13 @@ export class Paddle
 		this.velocity = 0;
 	}
 
-	update(direction: number, pressed: boolean, walls: Wall[])
+	update(direction: number, walls: Wall[])
 	{
 		if (this.frozen == true)
 		{
 			return;
 		}
-		if (pressed == false)
+		if (direction == 0)
 		{
 			if (Math.abs(this.velocity) < Paddle.acceleration * 1.5)
 			{
@@ -108,7 +108,7 @@ export class Paddle
 				}
 			}
 		}
-		else if (pressed == true && Math.abs(this.velocity) < Paddle.maxSpeed)
+		else if (direction != 0 && Math.abs(this.velocity) < Paddle.maxSpeed)
 		{
 			if ((this.velocity > 0 && direction < 0) ||
 				(this.velocity < 0 && direction > 0))

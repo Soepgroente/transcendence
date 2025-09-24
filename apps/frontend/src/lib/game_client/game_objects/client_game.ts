@@ -151,18 +151,6 @@ export class ClientGame
 		background.isBackground = true;
 		this.scene = scene;
 		this.playerCount = this.players.length;
-
-		// Debug Physics Viewer
-		// scene.onDataLoadedObservable.addOnce(() => {
-		// const viewer = new PhysicsViewer(scene);
-		// scene.meshes.forEach(m =>
-		// 	{
-		// 		if ((m as any).physicsBody || (m as any).physicsAggregate)
-		// 		{
-		// 			viewer.showBody((m as any).physicsBody || (m as any).physicsAggregate.body);
-		// 		}
-		// 	});
-		// });
 	}
 
 	private victory()
@@ -198,11 +186,53 @@ export class ClientGame
 	run()
 	{
 		this.pauseGame();
+		// send confirmation to server that client is ready
+		
+		const advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI('waitingUI', true, this.scene);
+		const waitingText = new TextBlock();
+
+		waitingText.text = "waiting for players...";
+		waitingText.color = "white";
+		waitingText.fontSize = 60;
+		waitingText.outlineWidth = 5;
+		waitingText.outlineColor = "black";
+		waitingText.horizontalAlignment = TextBlock.HORIZONTAL_ALIGNMENT_CENTER;
+		waitingText.verticalAlignment = TextBlock.VERTICAL_ALIGNMENT_CENTER;
+		advancedTexture.addControl(waitingText);
+
+		const waitForStart = async () =>
+		{
+			while (true)
+			{
+				// logic to check if the game should start
+				const serverInput = await loadServerInput((this.scene as any).socket) as string;
+				const data = JSON.parse(serverInput);
+
+				if (data.start === true)
+				{
+					advancedTexture.removeControl(waitingText);
+					advancedTexture.dispose();
+					this.showCountdown(this.scene, () =>
+					{
+						this.engine.runRenderLoop(this.gameLoop.bind(this));
+					});
+					break;
+				}
+				// Optionally, add small delay to avoid spamming server
+				await new Promise(r => setTimeout(r, 100));
+			}
+		};
+		waitForStart();
+	}
+
+	/* run()
+	{
+		this.pauseGame();
 		this.showCountdown(this.scene, () =>
 		{
 			this.engine.runRenderLoop(this.gameLoop.bind(this));
 		});
-	}
+	} */
 
 	private showCountdown(scene: Scene, onFinish: () => void)
 	{
@@ -242,20 +272,6 @@ export class ClientGame
 		this.lastState = JSON.parse(serverInput) as GameState;
 	}
 
-	private updateScoreboard()
-	{
-		const players = this.lastState.players;
-
-		for (let i = 0; i < this.players.length; i++)
-		{
-			if (this.players[i].getLives() != players[i].lives)
-			{
-				this.players[i].loseLife();
-				this.scoreboard[i].text = `Player ${this.players[i].ID}: ${this.players[i].getLives()}`;
-			}
-		}
-	}
-
 	private updateBalls()
 	{
 		const ballUpdates = this.lastState.balls;
@@ -276,12 +292,27 @@ export class ClientGame
 		}
 	}
 
+	private updateScoreboard()
+	{
+		const players = this.lastState.players;
+
+		for (let i = 0; i < this.players.length; i++)
+		{
+			if (this.players[i].getLives() != players[i].lives)
+			{
+				this.players[i].loseLife();
+				this.scoreboard[i].text = `Player ${this.players[i].ID}: ${this.players[i].getLives()}`;
+			}
+		}
+	}
+
 	private gameLoop()
 	{
 		this.updateGameState();
 		this.updateBalls();
 		this.updatePaddles();
 		this.updateScoreboard();
+		// send key presses
 		this.scene.render();
 	}
 

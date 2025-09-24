@@ -18,7 +18,6 @@ export class ServerGame
 	private gameState: GameState;
 	
 	private jsonMap: any;
-	private clients: { id: number; alias: string }[];
 	private players: Player[] = [];	
 	private paddles: Paddle[] = [];
 	private balls: Ball[] = [];
@@ -26,7 +25,7 @@ export class ServerGame
 	private goals: Goal[] = [];
 	private playerCount: number = 0;
 
-	constructor(havokInstance: any, matchID: number, clients: { id: number; alias: string }[])
+	constructor(havokInstance: any, gameState: GameState)
 	{
 		this.gameCanvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 		this.havokInstance = havokInstance;
@@ -34,8 +33,7 @@ export class ServerGame
 		this.gameIsRunning = true;
 		this.engine = new Engine(this.gameCanvas, true, {antialias: true});
 		this.scene = new Scene(this.engine);
-		this.gameState = new GameState(matchID);
-		this.clients = clients;
+		this.gameState = gameState;
 		console.log('Game started');
 	}
 
@@ -64,25 +62,12 @@ export class ServerGame
 		{
 			throw new Error(`Map cannot have more than ${maxPlayerCount} players.`);
 		}
+		
 		const state = this.gameState;
-		const players = this.clients;
-
 		for (let i = 0; i < this.players.length; i++)
 		{
-			state.players.push(
-			{
-				id: players[i].id,
-				alias: players[i].alias,
-				lives: 3,
-				position: this.paddles[i].getPosition(),
-				isAlive: true,
-				isReady: false,
-				action: []
-			});
+			state.players[i].position = this.paddles[i].getPosition();
 		}
-		state.set(matchId, initialState);
-		this.notifySubs(matchId, initialState);
-
 		for (let j = 0; j < this.balls.length; j++)
 		{
 			state.balls.push(this.balls[j].getPosition());
@@ -126,7 +111,11 @@ export class ServerGame
 	run()
 	{
 		// wait for everyone to be ready
-		this.startGame();
+
+		// send confirmation to clients that game is starting
+
+		/*	sets a timeout while clients display "3, 2, 1, START" + 100ms before commencing game	*/
+		setTimeout(() => { this.startGame(); }, 2100);
 	}
 
 	private updateGameState()
@@ -148,6 +137,7 @@ export class ServerGame
 			state.balls.push(this.balls[i].getPosition());
 		}
 		state.lastUpdate = Date.now();
+		// send updated game state to clients
 	}
 
 	private updatePlayerInput()
@@ -172,7 +162,7 @@ export class ServerGame
 					direction = 0;
 					break;
 			}
-			this.paddles[i].update(direction, direction != 0 ? true : false, this.walls);
+			this.paddles[i].update(direction, this.walls);
 		}
 	}
 

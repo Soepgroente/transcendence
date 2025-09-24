@@ -1,7 +1,5 @@
 import {
-  GameState,
-  Player,
-  PlayerAction
+  GameState
 } from '@repo/trpc/src/types/gameState';
 import { TRPCError } from '@trpc/server';
 import { EventEmitter } from 'events';
