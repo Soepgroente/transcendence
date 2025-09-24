@@ -1,30 +1,4 @@
 <!-- src/routes/game/+page.svelte -->
-<!-- <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
-	import { Game } from '$lib/index';
-
-	let game: Game = null;
-	onMount(async () =>
-	{
-		const { startGame } = await import('$lib');
-		if (game == null)
-		{
-			game = await startGame('maps/standard4player.map');
-		}
-	});
-	onDestroy(async () =>
-	{
-		const { destroyGame } = await import('$lib');
-		if (game != null)
-		{
-			await destroyGame(game);
-			game = null;
-		}
-	});
-</script>
-
-<canvas id="gameCanvas" class="size-full"></canvas>
-<input id="mapInput" type="file" accept=".map" /> -->
 
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
