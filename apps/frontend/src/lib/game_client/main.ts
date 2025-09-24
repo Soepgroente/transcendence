@@ -5,7 +5,7 @@ async function getPhysics(): Promise<any>
 {
 	return await HavokPhysics({locateFile: (file: string) => `/${file}`});
 }
-	
+
 export async function startGame(map: string): Promise<ClientGame>
 {
 	const havokInstance = await getPhysics();

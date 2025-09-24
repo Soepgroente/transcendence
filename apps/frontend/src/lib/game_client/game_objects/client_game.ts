@@ -40,6 +40,10 @@ export class ClientGame
 		window.addEventListener('keyup', (event) => {this.keys[event.key] = false;});			
 		
 		this.gameCanvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
+		if (!this.gameCanvas)
+		{
+			console.error('Game canvas not found');
+		}
 		this.havokInstance = havokInstance;
 		this.dimensions = [0, 0];
 		this.gameIsRunning = true;
@@ -134,7 +138,7 @@ export class ClientGame
 		const cameraHeight = Math.max(this.dimensions[0], this.dimensions[1]) + 10;
 		const camera = new FreeCamera('camera1', new Vector3(0, cameraHeight, 0), scene);
 		camera.setTarget(Vector3.Zero());
-		camera.attachControl(this.gameCanvas, true);
+		// camera.attachControl(this.gameCanvas, true);
 		createGround(scene, this.dimensions);
 		createBalls(scene, this.balls, map);
 		createSurroundingWalls(scene, this.walls, this.dimensions);
@@ -184,7 +188,7 @@ export class ClientGame
 		const advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI('waitingUI', true, this.scene);
 		const waitingText = new TextBlock();
 
-		waitingText.text = "waiting for players...";
+		waitingText.text = "Waiting for players...";
 		waitingText.color = "white";
 		waitingText.fontSize = 60;
 		waitingText.outlineWidth = 5;
@@ -193,32 +197,33 @@ export class ClientGame
 		waitingText.verticalAlignment = TextBlock.VERTICAL_ALIGNMENT_CENTER;
 		advancedTexture.addControl(waitingText);
 
-		while (true)
-		{
+		// while (true)
+		// {
 			// logic to check if the game should start
-			const serverInput = await loadServerInput((this.scene as any).socket) as string;
-			const data = JSON.parse(serverInput);
+			// const serverInput = await loadServerInput((this.scene as any).socket) as string;
+			// const data = JSON.parse(serverInput);
 
-			if (data.start === true)
-			{
-				advancedTexture.removeControl(waitingText);
-				advancedTexture.dispose();
-				this.showCountdown(this.scene, () =>
-				{
-					this.engine.runRenderLoop(this.gameLoop.bind(this));
-				});
-				break;
-			}
+			// if (data.start == true)
+			// {
+			// 	advancedTexture.removeControl(waitingText);
+			// 	advancedTexture.dispose();
+			// 	this.showCountdown(this.scene, () =>
+			// 	{
+			// 	});
+			// 	break;
+			// }
 			// Optionally, add small delay to avoid spamming server
-			await new Promise(r => setTimeout(r, 100));
-		}
+			// await new Promise(r => setTimeout(r, 100));
+			this.engine.runRenderLoop(this.gameLoop.bind(this));
+		// }
 	}
 
 	run()
 	{
 		this.pauseGame();
+		this.scene.render();
 		
-		// send confirmation to server that client is ready to roll		
+		// send confirmation to server that client is ready to roll
 
 		this.waitForStart();
 	}
@@ -266,8 +271,10 @@ export class ClientGame
 
 	private async updateGameState()
 	{
-		const serverInput = await loadServerInput((this.scene as any).socket) as string;
-		this.lastState = JSON.parse(serverInput) as GameState;
+		;
+		//get stuff from the gamestate object
+		// const serverInput = await loadServerInput((this.scene as any).socket) as string;
+		// this.lastState = JSON.parse(serverInput) as GameState;
 	}
 
 	private updateBalls()
@@ -306,10 +313,10 @@ export class ClientGame
 
 	private gameLoop()
 	{
-		this.updateGameState();
-		this.updateBalls();
-		this.updatePaddles();
-		this.updateScoreboard();
+		// this.updateGameState();
+		// this.updateBalls();
+		// this.updatePaddles();
+		// this.updateScoreboard();
 		// send key presses to server
 		this.scene.render();
 	}
@@ -341,6 +348,7 @@ export class ClientGame
 
 async function loadFileText(filePath: string): Promise<string>
 {
+	console.log(`Loading file: ${filePath}`);
 	const response = await fetch(filePath);
 
 	if (response.ok == false)

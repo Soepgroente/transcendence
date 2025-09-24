@@ -6,11 +6,11 @@ export class Ball
 
 	constructor(_center: Vector3, _color: Color3, _diameter: number, scene: Scene)
 	{
-		const mat = new StandardMaterial('ballMat', this.mesh.getScene());
+		this.mesh = MeshBuilder.CreateSphere('sphere', {diameter: _diameter}, scene);
+		const mat = new StandardMaterial('ballMat', scene);
 
 		mat.diffuseColor = _color;
 		mat.maxSimultaneousLights = 16;
-		this.mesh = MeshBuilder.CreateSphere('sphere', {diameter: _diameter}, scene);
 		this.mesh.position = _center;
 		this.mesh.material = mat;
 	}

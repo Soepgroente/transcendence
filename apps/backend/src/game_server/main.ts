@@ -21,3 +21,6 @@ export async function startGame(map: string, gameState: GameState): Promise<Serv
 	game.run();
 	return game;
 }
+
+// create new gamestate
+// use new gamestate to create new ServerGame
