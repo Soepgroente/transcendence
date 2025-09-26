@@ -58,6 +58,12 @@ export async function signIn(email: string, password: string) {
       message: 'User not found',
     });
   }
+  if (user.googleId) {
+    throw new TRPCError({ 
+      code: 'UNAUTHORIZED', 
+      message: 'Please log in with Google' 
+    });
+  }
   const isPasswordValid = await verifyPassword(user.password, password);
   if (!isPasswordValid) {
     throw new TRPCError({

@@ -18,6 +18,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@fastify/cookie": "^11.0.2",
     "@fastify/websocket": "^11.2.0",
     "@libsql/client": "^0.15.10",
     "@repo/trpc": "workspace:*",
@@ -30,7 +31,8 @@
     "drizzle-seed": "^0.3.1",
     "fastify": "^5.4.0",
     "jsonwebtoken": "^9.0.2",
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "pino": "^9.10.0"
   },
   "devDependencies": {
     "@fastify/cors": "^11.1.0",
