@@ -46,7 +46,7 @@
 		{
 			try
 			{
-				game = await startGame('maps/standard2player.map');
+				game = await startGame('maps/standard4player.map');
 			}
 			catch (err)
 			{

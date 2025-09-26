@@ -138,7 +138,7 @@ export class ClientGame
 		const cameraHeight = Math.max(this.dimensions[0], this.dimensions[1]) + 10;
 		const camera = new FreeCamera('camera1', new Vector3(0, cameraHeight, 0), scene);
 		camera.setTarget(Vector3.Zero());
-		// camera.attachControl(this.gameCanvas, true);
+		camera.attachControl(this.gameCanvas, true);
 		createGround(scene, this.dimensions);
 		createBalls(scene, this.balls, map);
 		createSurroundingWalls(scene, this.walls, this.dimensions);
