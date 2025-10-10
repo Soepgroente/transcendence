@@ -81,10 +81,12 @@ export class GameStateManager extends EventEmitter {
       });
     }
     serverGame.enqueueAction(action);
-    if (action.action === 'ready') {
-      if (serverGame.gameState.players.every((p) => p.isReady)) {
-        //here update DB that match is starting
-      }
+    //  Do this in server_game.ts preGameLoop instead where we already check whether everyone is ready?
+    //TODO: Update gameState in db
+    if (serverGame.gameState.status == 'waiting') {
+      if (action.action == 'ready' && serverGame.gameState.players.every((p) => p.isReady)) {
+          //here update DB that match is starting
+        }
     }
   }
 }
