@@ -4,6 +4,8 @@ import { tournamentPlayersTable, tournamentTable } from '@repo/db/dbSchema';
 import { Tournament } from '@repo/db/dbTypes';
 import { TRPCError } from '@trpc/server';
 
+type Match = typeof matchTable.$inferInsert;
+
 async function insertTournament(
   name: string,
   ownerId: number,
@@ -50,8 +52,13 @@ function tournamentPlayers(
   tournamentId: number
 ): Promise<{ playerId: number }[]> {
   return db
-    .select()
+    .select({
+      id: usersTable.id,
+      alias: usersTable.alias,
+      email: usersTable.email,
+    })
     .from(tournamentPlayersTable)
+    .innerJoin(usersTable, eq(tournamentPlayersTable.playerId, usersTable.id))
     .where(eq(tournamentPlayersTable.tournamentId, tournamentId));
 }
 
@@ -79,6 +86,14 @@ async function tournamentExists(tournamentName: string): Promise<Tournament> {
   return tournament;
 }
 
+//TODO: modify return type
+async function getTournamentMatches(tournamentId: number): Promise<Match[]> {
+  return db
+    .select()
+    .from(matchTable)
+    .where(eq(matchTable.tournamentId, tournamentId))
+    .orderBy(matchTable.id);
+}
 /**
  * Tournament service class
  * This class contains methods to create, join, list tournaments and get tournament players
@@ -154,6 +169,7 @@ export class TournamentService {
     }
   }
 
+  //TODO: modify return type should return players info[]
   async getTournamentPlayers(tournamentName: string) {
     const tournament = await tournamentExists(tournamentName);
     try {
@@ -167,25 +183,109 @@ export class TournamentService {
     }
   }
 
+  /**
+   * this function creates a match for a tournament and adds players to the match
+   * @param tournamentId
+   * @param playerIds
+   * @returns
+   */
+  async matchMaking(tournamentId: number, playerIds: number[]): Promise<any> {
+    try {
+      const [match] = await db
+        .insert(matchTable)
+        .values({
+          tournamentId: tournamentId,
+          maxPlayers: 2,
+          victor: null,
+        })
+        .returning();
+      // add players to match
+      await db.insert(singleMatchPlayersTable).values([
+        {
+          matchId: match.id,
+          playerId: playerIds[0],
+          placement: 0,
+        },
+        {
+          matchId: match.id,
+          playerId: playerIds[0],
+          placement: 0,
+        },
+      ]);
+      return match;
+    } catch (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to create match',
+        cause: error,
+      });
+    }
+  }
+
+  /**
+   * Start a tournament by name, this will create the first round of matches and assign players to matches
+   * @param tournamentName
+   * @returns
+   */
   async startTournament(tournamentName: string) {
     const tournament = await tournamentExists(tournamentName);
+    if (tournament.status === 'ongoing') {
+      throw new TRPCError({
+        code: 'BAD_REQUEST',
+        message: 'Tournament already started',
+      });
+    }
     if (tournament.status !== 'ready') {
       throw new TRPCError({
-        code: 'FORBIDDEN',
+        code: 'BAD_REQUEST',
         message: 'Tournament not ready to start',
       });
     }
     try {
+      //get players in the tournament
+      const players = await tournamentPlayers(tournament.id);
+      if (players.length < tournament.playerLimit) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: `Need ${tournament.playerLimit} players to start the tournament`,
+        });
+      }
+      //TODO: in frontend, only the creator can start the tournament
+      //createTournamentMatches logic here
+      //need to create matches and assign players to matches
+
+      const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
+
+      const matchCount = tournament.playerLimit / 2;
+      const createdMatches = [];
+
+      for (let i = 0; i < matchCount; i++) {
+        const player1 = shuffledPlayers[i * 2];
+        const player2 = shuffledPlayers[i * 2 + 1];
+
+        const match = await this.matchMaking(tournament.id, [
+          player1.id,
+          player2.id,
+        ]);
+        createdMatches.push({
+          matchId: match.id,
+          players: [player1, player2],
+        });
+      }
+
       await db
         .update(tournamentTable)
         .set({ status: 'ongoing' })
         .where(eq(tournamentTable.name, tournamentName));
-
-      //createTournamentMatches logic here
-      //need to create matches and assign players to matches
       return {
         success: true,
-        message: 'Tournament started successfully',
+        tournament: {
+          id: tournament.id,
+          name: tournament.name,
+          status: 'ongoing',
+          playerLimit: tournament.playerLimit,
+        },
+        matches: createdMatches,
       };
     } catch (error) {
       throw new TRPCError({
@@ -195,4 +295,47 @@ export class TournamentService {
       });
     }
   }
+
+  /**
+   * Retrieves the bracket for a tournament, including all matches and their participating players.
+   * Each match includes its ID, players (with user alias and placement), victor (if decided), and status.
+   *
+   * @param tournamentName - The name of the tournament to fetch the bracket for.
+   * @returns An object containing tournament details and an array of matches with player information.
+   */
+  async getTournamentBracket(tournamentName: string) {
+    const tournament = await tournamentExists(tournamentName);
+
+    const matches = await getTournamentMatches(tournament.id);
+
+    const matchesWithPlayers = await Promise.all(
+      matches.map(async (match) => {
+        const players = await db
+          .select({
+            id: usersTable.id,
+            userAlias: usersTable.alias,
+            placement: singleMatchPlayersTable.placement,
+          })
+          .from(singleMatchPlayersTable)
+          .innerJoin(
+            usersTable,
+            eq(singleMatchPlayersTable.playerId, usersTable.id)
+          )
+          .where(eq(singleMatchPlayersTable.matchId, match.id));
+
+        const winner = match.victor
+          ? players.find((p) => p.id === match.victor)
+          : null;
+
+        return {
+          matchId: match.id,
+          players: players,
+          victor: winner,
+          status: match.victor ? 'completed' : 'ongoing',
+        };
+      })
+    );
+    return { tournament: tournament, matches: matchesWithPlayers };
+  }
+    
 }
