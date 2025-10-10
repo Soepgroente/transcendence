@@ -1,6 +1,12 @@
 import { and, eq } from 'drizzle-orm';
 import { db } from '../db/src/dbClientInit';
-import { tournamentPlayersTable, tournamentTable } from '@repo/db/dbSchema';
+import {
+  tournamentPlayersTable,
+  tournamentTable,
+  matchTable,
+  usersTable,
+  singleMatchPlayersTable,
+} from '@repo/db/dbSchema';
 import { Tournament } from '@repo/db/dbTypes';
 import { TRPCError } from '@trpc/server';
 
@@ -52,11 +58,7 @@ function tournamentPlayers(
   tournamentId: number
 ): Promise<{ playerId: number }[]> {
   return db
-    .select({
-      id: usersTable.id,
-      alias: usersTable.alias,
-      email: usersTable.email,
-    })
+    .select()
     .from(tournamentPlayersTable)
     .innerJoin(usersTable, eq(tournamentPlayersTable.playerId, usersTable.id))
     .where(eq(tournamentPlayersTable.tournamentId, tournamentId));
@@ -264,8 +266,8 @@ export class TournamentService {
         const player2 = shuffledPlayers[i * 2 + 1];
 
         const match = await this.matchMaking(tournament.id, [
-          player1.id,
-          player2.id,
+          player1.playerId,
+          player2.playerId,
         ]);
         createdMatches.push({
           matchId: match.id,
@@ -337,5 +339,5 @@ export class TournamentService {
     );
     return { tournament: tournament, matches: matchesWithPlayers };
   }
-    
+
 }
