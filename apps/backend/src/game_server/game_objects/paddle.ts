@@ -41,38 +41,53 @@ export class Paddle
 		this.aggregate.body.disablePreStep = false;
 		this.frozen = false;
 	}
+
+	/*	Optimisation, if this results in clipping we can use the stepping method	*/
 	
 	private move(walls: Wall[])
 	{
 		if (this.frozen) return;
 
-		const dx = this.upDirection.x * this.velocity;
-		const dz = this.upDirection.z * this.velocity;
-		const distance = Math.hypot(dx, dz);
+		// const dx = this.upDirection.x * this.velocity;
+		// const dz = this.upDirection.z * this.velocity;
+		// const distance = Math.hypot(dx, dz);
 
-		if (distance == 0) return;
+		// if (distance == 0) return;
 
-		const stepSize = 0.08;
-		const steps = Math.max(1, Math.ceil(distance / stepSize));
-		const stepX = dx / steps;
-		const stepZ = dz / steps;
+		// const stepSize = 0.08;
+		// const steps = Math.max(1, Math.ceil(distance / stepSize));
+		// const stepX = dx / steps;
+		// const stepZ = dz / steps;
 
-		for (let s = 0; s < steps; s++)
+		// for (let s = 0; s < steps; s++)
+		// {
+		// 	this.mesh.position.x += stepX;
+		// 	this.mesh.position.z += stepZ;
+
+		// 	this.mesh.computeWorldMatrix(true);
+		// 	for (const wall of walls)
+		// 	{
+		// 		if (meshesIntersect(this.mesh, wall.getMesh()) == true)
+		// 		{
+		// 			this.mesh.position.x -= stepX;
+		// 			this.mesh.position.z -= stepZ;
+		// 			this.velocity = 0;
+		// 			return;
+		// 		}
+		// 	}
+		// }
+		this.mesh.position.x += this.upDirection.x * this.velocity;
+		this.mesh.position.z += this.upDirection.z * this.velocity;
+
+		this.mesh.computeWorldMatrix(true);
+		for (const wall of walls)
 		{
-			this.mesh.position.x += stepX;
-			this.mesh.position.z += stepZ;
-
-			this.mesh.computeWorldMatrix(true);
-			for (const wall of walls)
+			if (meshesIntersect(this.mesh, wall.getMesh()) == true)
 			{
-				wall.getMesh().computeWorldMatrix(true);
-				if (meshesIntersect(this.mesh, wall.getMesh()) == true)
-				{
-					this.mesh.position.x -= stepX;
-					this.mesh.position.z -= stepZ;
-					this.velocity = 0;
-					return;
-				}
+				this.mesh.position.x -= this.upDirection.x * this.velocity;
+				this.mesh.position.z -= this.upDirection.z * this.velocity;
+				this.velocity = 0;
+				return;
 			}
 		}
 	}
@@ -104,17 +119,15 @@ export class Paddle
 			if (Math.abs(this.velocity) < Paddle.acceleration * 1.5)
 			{
 				this.velocity = 0;
+				return;
+			}
+			if (this.velocity > 0)
+			{
+				this.velocity -= Paddle.acceleration;
 			}
 			else
 			{
-				if (this.velocity > 0)
-				{
-					this.velocity -= Paddle.acceleration;
-				}
-				else
-				{
-					this.velocity += Paddle.acceleration;
-				}
+				this.velocity += Paddle.acceleration;
 			}
 		}
 		else if (Math.abs(this.velocity) < Paddle.maxSpeed)
@@ -125,10 +138,6 @@ export class Paddle
 				direction *= 2;
 			}
 			this.velocity += direction * Paddle.acceleration;
-		}
-		if (this.velocity == 0)
-		{
-			return;
 		}
 		this.velocity = Math.min(Paddle.maxSpeed, Math.max(-Paddle.maxSpeed, this.velocity));
 		this.move(walls);

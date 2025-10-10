@@ -85,8 +85,8 @@ export class ServerGame extends EventEmitter
 		{
 			throw new Error(`Map cannot have more than ${maxPlayerCount} players.`);
 		}
-		
 		const state = this.gameState;
+
 		for (let i = 0; i < this.players.length; i++)
 		{
 			state.players[i].position = this.paddles[i].getPosition();
@@ -196,6 +196,8 @@ export class ServerGame extends EventEmitter
 		while (this.actionQueue.length > 0)
 		{
 			const action = this.actionQueue.shift()!;
+
+			// isn't this always action.playerID - 1?
 			const paddleIndex = this.gameState.players.findIndex(p => p.id == action.playerId);
 			if (paddleIndex >= 0)
 			{
@@ -204,7 +206,7 @@ export class ServerGame extends EventEmitter
 				{
 					case '1': direction = 1; break;
 					case '-1': direction = -1; break;
-					case '0': direction = 0; break;
+					// case '0': direction = 0; break;
 					default: direction = 0; break;
 				}
 				this.paddles[paddleIndex].update(direction, this.walls);
@@ -241,7 +243,7 @@ export class ServerGame extends EventEmitter
 			}
 			if (scored == false)
 			{
-				this.balls[i].update(this.paddles, this.walls);
+				this.balls[i].update(this.paddles);
 			}
 			if (this.balls.length == 0)
 			{
@@ -250,6 +252,7 @@ export class ServerGame extends EventEmitter
 			scored = false;
 		}
 	}
+
 	private gameLoop()
 	{
 		if (this.gameIsRunning == true)

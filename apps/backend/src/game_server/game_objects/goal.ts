@@ -74,14 +74,8 @@ export class Goal
 		{
 			return false;
 		}
-		const linearVelocity = ball.getDirection();
-
-		if (linearVelocity == null)
-		{
-			return false;
-		}
-		const ballDirection = linearVelocity.normalize();
-
+		const ballDirection = ball.getDirection();
+	
 		if (Vector3.Dot(ballDirection, this.normal) < 0)
 		{
 			this.scoringCooldown = 1;

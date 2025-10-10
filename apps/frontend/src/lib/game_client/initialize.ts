@@ -5,7 +5,7 @@ import { Goal } from './game_objects/goal';
 import { Player } from './game_objects/player';
 import { Scene, Vector3, Color3, StandardMaterial, MeshBuilder } from '@babylonjs/core';
 import { AdvancedDynamicTexture, Rectangle, TextBlock, Control } from '@babylonjs/gui';
-import {Colors, ColorMap, jsonToVector3 } from './utils';
+import { Colors, ColorMap, jsonToVector3 } from './utils';
 const ballDiameter = 0.5;
 
 export function	createSurroundingWalls(scene: Scene, walls: Wall[], dimensions: number[])
