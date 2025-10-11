@@ -2,10 +2,13 @@
   import { onMount } from "svelte";
   import { trpc } from "$lib/trpc";
   import {tournamentInput} from '@repo/trpc/src/schemas';
+  import { goto } from "$app/navigation";
+  import { currentUser } from "$lib/auth/store";
+  import type { Tournament } from "@repo/db/dbTypes";
 
   let name: string = "";
   let limit: number = 4;
-  let tournaments: any[] = [];
+  let tournaments: Tournament[] = [];
   let loading = false;
   let error: string | null = null;
   let tournamentPlayerCount: Record<string, number> = {};
@@ -59,17 +62,26 @@
 
   async function joinTournament(tournamentName: string) {
     try {
-      await trpc.tournament.join.mutate({ name: tournamentName });
+      const res = await trpc.tournament.join.mutate({ name: tournamentName });
       await fetchTournaments();
+      console.log(`Joined tournament: ${JSON.stringify(res, null, 2)}`);
+      // goto tournament_brackets page with tournamentName as param
+      // goto(`/tournament_brackets?tournamentName=${(tournamentName)}`);
     } catch (err) {
       error = "Failed to join tournament.";
     }
   }
 
   async function startTournament(tournamentName: string) {
+    if (tournaments.find(t => t.name === tournamentName)?.creator !== $currentUser.id) {
+      setTimeout(() => {
+        goto(`/tournament_brackets?tournamentName=${(tournamentName)}`);
+      }, 1000);
+      return;
+    }
     try {
       await trpc.tournament.start.mutate({ name: tournamentName });
-      await fetchTournaments();
+      goto(`/tournament_brackets?tournamentName=${(tournamentName)}`);
     } catch (err) {
       error = err.message || "Failed to start tournament.";
       console.error('Start tournament error: ', err);

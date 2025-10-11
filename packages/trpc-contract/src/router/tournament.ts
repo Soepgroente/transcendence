@@ -16,7 +16,10 @@ export const tournamentRouter = createRouter({
   join: protectedProcedure
     .input(z.object({ name: tournamentNameSchema }))
     .mutation(async ({ input, ctx }) => {
-      return await ctx.services.tournament.joinTournament(input.name, ctx.userToken.id);
+      return await ctx.services.tournament.joinTournament(
+        input.name,
+        ctx.userToken.id
+      );
     }),
 
   list: publicProcedure.query(async ({ ctx }) => {
@@ -55,5 +58,17 @@ export const tournamentRouter = createRouter({
     .input(z.object({ name: tournamentNameSchema }))
     .mutation(async ({ input, ctx }) => {
       return await ctx.services.tournament.startTournament(input.name);
+    }),
+
+  getBracket: protectedProcedure
+    .input(z.object({ name: tournamentNameSchema }))
+    .query(async ({ input, ctx }) => {
+      const bracket = await ctx.services.tournament.getTournamentBracket(
+        input.name
+      );
+      if (!bracket) {
+        throw new Error('No bracket found for this tournament');
+      }
+      return bracket || null;
     }),
 });

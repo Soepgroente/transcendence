@@ -7,10 +7,9 @@ import {
   usersTable,
   singleMatchPlayersTable,
 } from '@repo/db/dbSchema';
-import { Tournament } from '@repo/db/dbTypes';
+import { Match, Tournament } from '@repo/db/dbTypes';
 import { TRPCError } from '@trpc/server';
-
-type Match = typeof matchTable.$inferInsert;
+import { User, TournamentBrackets } from '@repo/trpc/src/types';
 
 async function insertTournament(
   name: string,
@@ -53,15 +52,22 @@ async function isPlayerInTournament(
   return !!exist;
 }
 
-// Get all players in a tournament by tournament ID
-function tournamentPlayers(
-  tournamentId: number
-): Promise<{ playerId: number }[]> {
-  return db
-    .select()
+/**
+ * Get all players in a tournament
+ * @param tournamentId
+ * @returns array of players as User[]
+ */
+async function tournamentPlayers(tournamentId: number): Promise<User[]> {
+  const result = await db
+    .select({
+      id: usersTable.id,
+      email: usersTable.email,
+      name: usersTable.alias,
+    })
     .from(tournamentPlayersTable)
     .innerJoin(usersTable, eq(tournamentPlayersTable.playerId, usersTable.id))
     .where(eq(tournamentPlayersTable.tournamentId, tournamentId));
+  return result;
 }
 
 async function addPlayerToTournament(tournamentId: number, playerId: number) {
@@ -88,7 +94,6 @@ async function tournamentExists(tournamentName: string): Promise<Tournament> {
   return tournament;
 }
 
-//TODO: modify return type
 async function getTournamentMatches(tournamentId: number): Promise<Match[]> {
   return db
     .select()
@@ -142,6 +147,8 @@ export class TournamentService {
       await addPlayerToTournament(tournament.id, playerId);
       const players = await tournamentPlayers(tournament.id);
       if (players.length >= tournament.playerLimit) {
+        // automatically start the tournament when full
+        // await this.startTournament(tournamentName);
         console.log("Tournament is full, updating status to 'ready'");
         await db
           .update(tournamentTable)
@@ -159,7 +166,7 @@ export class TournamentService {
   }
 
   // List all tournaments in the database
-  async listAllTournaments() {
+  async listAllTournaments(): Promise<Tournament[]> {
     try {
       return await db.select().from(tournamentTable);
     } catch (error) {
@@ -172,6 +179,7 @@ export class TournamentService {
   }
 
   //TODO: modify return type should return players info[]
+  //not sure if this function is needed
   async getTournamentPlayers(tournamentName: string) {
     const tournament = await tournamentExists(tournamentName);
     try {
@@ -191,7 +199,7 @@ export class TournamentService {
    * @param playerIds
    * @returns
    */
-  async matchMaking(tournamentId: number, playerIds: number[]): Promise<any> {
+  async matchMaking(tournamentId: number, playerIds: number[]): Promise<Match> {
     try {
       const [match] = await db
         .insert(matchTable)
@@ -210,7 +218,7 @@ export class TournamentService {
         },
         {
           matchId: match.id,
-          playerId: playerIds[0],
+          playerId: playerIds[1],
           placement: 0,
         },
       ]);
@@ -252,10 +260,7 @@ export class TournamentService {
           message: `Need ${tournament.playerLimit} players to start the tournament`,
         });
       }
-      //TODO: in frontend, only the creator can start the tournament
-      //createTournamentMatches logic here
       //need to create matches and assign players to matches
-
       const shuffledPlayers = [...players].sort(() => Math.random() - 0.5);
 
       const matchCount = tournament.playerLimit / 2;
@@ -266,8 +271,8 @@ export class TournamentService {
         const player2 = shuffledPlayers[i * 2 + 1];
 
         const match = await this.matchMaking(tournament.id, [
-          player1.playerId,
-          player2.playerId,
+          player1.id,
+          player2.id,
         ]);
         createdMatches.push({
           matchId: match.id,
@@ -279,22 +284,10 @@ export class TournamentService {
         .update(tournamentTable)
         .set({ status: 'ongoing' })
         .where(eq(tournamentTable.name, tournamentName));
-      return {
-        success: true,
-        tournament: {
-          id: tournament.id,
-          name: tournament.name,
-          status: 'ongoing',
-          playerLimit: tournament.playerLimit,
-        },
-        matches: createdMatches,
-      };
+      return createdMatches;
     } catch (error) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Failed to start tournament',
-        cause: error,
-      });
+      console.error(error);
+      throw error;
     }
   }
 
@@ -305,10 +298,18 @@ export class TournamentService {
    * @param tournamentName - The name of the tournament to fetch the bracket for.
    * @returns An object containing tournament details and an array of matches with player information.
    */
-  async getTournamentBracket(tournamentName: string) {
+  async getTournamentBracket(
+    tournamentName: string
+  ): Promise<TournamentBrackets> {
     const tournament = await tournamentExists(tournamentName);
 
     const matches = await getTournamentMatches(tournament.id);
+    if (tournament === null) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'No bracket found for this tournament',
+      });
+    }
 
     const matchesWithPlayers = await Promise.all(
       matches.map(async (match) => {
@@ -326,18 +327,16 @@ export class TournamentService {
           .where(eq(singleMatchPlayersTable.matchId, match.id));
 
         const winner = match.victor
-          ? players.find((p) => p.id === match.victor)
+          ? (players.find((p) => p.id === match.victor) ?? null)
           : null;
-
         return {
-          matchId: match.id,
+          id: match.id,
           players: players,
           victor: winner,
-          status: match.victor ? 'completed' : 'ongoing',
+          status: 'waiting', // TODO: implement match status properly
         };
       })
     );
     return { tournament: tournament, matches: matchesWithPlayers };
   }
-
 }
