@@ -215,17 +215,17 @@
       {#if myActiveMatch}
         {@const opponent = getOpponent(myActiveMatch)}
         <div
-          class="bg-gradient-to-r from-green-600 to-green-800 border-2 border-green-400 rounded-2xl p-6 mb-8 shadow-2xl animate-pulse"
+          class="bg-gradient-to-r from-green-600 to-green-800 border-2 border-green-400 rounded-2xl p-6 mb-8 shadow-2xl"
         >
           <div class="text-center">
             <h2 class="text-xl text-green-100 mb-4">🎮 YOUR MATCH IS READY!</h2>
             <div class="bg-black/40 rounded-xl p-4 mb-4">
               <p class="text-sm text-white mb-2">
-                <span class="text-green-400">YOU</span>
-                <span class="text-cyan-400 mx-2">VS</span>
-                <span class="text-red-400"
-                  >{opponent?.userAlias || 'UNKNOWN'}</span
-                >
+          <span class="text-green-400">YOU</span>
+          <span class="text-cyan-400 mx-2">VS</span>
+          <span class="text-red-400"
+            >{opponent?.userAlias || 'UNKNOWN'}</span
+          >
               </p>
             </div>
             <button
