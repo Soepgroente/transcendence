@@ -71,7 +71,8 @@
       await trpc.tournament.start.mutate({ name: tournamentName });
       await fetchTournaments();
     } catch (err) {
-      error = "Failed to start tournament.";
+      error = err.message || "Failed to start tournament.";
+      console.error('Start tournament error: ', err);
     }
   }
 </script>
@@ -103,15 +104,15 @@
     {/if}
 
     <div class="bg-gradient-to-br from-purple-700 to-indigo-900 rounded-3xl shadow-2xl p-6 mb-8">
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <div class="overflow-x-auto flex flex-col md:flex-row gap-4 justify-center">
         <input
           type="text"
           placeholder="Tournament name"
           bind:value={name}
-          class="px-4 py-2 rounded-lg text-black text-sm font-bold"
+            class="flex-1 min-w-[200px] px-4 py-2 rounded-lg text-black text-sm font-bold"
           required
         />
-        <select bind:value={limit} class="px-4 py-2 rounded-lg text-black text-sm font-bold">
+        <select bind:value={limit} class="flex-1px-4 py-2 rounded-lg text-black text-sm font-bold">
           <option value={2}>2 Players</option>
           <option value={4}>4 Players</option>
           <option value={8}>8 Players</option>
