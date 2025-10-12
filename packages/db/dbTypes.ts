@@ -35,3 +35,12 @@ export interface TournamentHistoryEntry {
   playerLimit: number;
   isWin: boolean;
 }
+
+export interface AvailableMatch {
+  id: number;
+  maxPlayers: number;
+  victor: number | null;
+  tournamentId: number | null;
+  playerCount: number;
+  status: 'waiting' | 'ready' | 'playing' | 'finished';
+}

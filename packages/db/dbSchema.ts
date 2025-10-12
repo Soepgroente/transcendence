@@ -96,6 +96,11 @@ export const matchTable = sqliteTable('match_table', {
   maxPlayers: int().notNull().default(2),
   victor: int().references(() => usersTable.id), // This field will contain the player with placement 1 after the end of the match
   date: text().default(sql`CURRENT_TIMESTAMP`),
+  status: text('status', {
+    enum: ['waiting', 'playing', 'finished'],
+  })
+    .notNull()
+    .default('waiting'),
 });
 
 /**

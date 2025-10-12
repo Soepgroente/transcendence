@@ -1,21 +1,14 @@
-<script>
+<script lang="ts">
   import { goto } from '$app/navigation';
   import { trpc } from '$lib/trpc';
   import { onMount } from 'svelte';
+  import type { AvailableMatch } from '@repo/db/dbTypes';
 
-  // State management
-  let games = [];
+  let games: AvailableMatch[] = [];
   let loading = false;
   let error = null;
   let limit = 2;
 
-  //TODO: use this later to filter games
-  $: availableGames = games.filter(
-    (game) => game.status === 'waiting' && game.playerCount < game.maxPlayers
-  );
-  $: readyGames = games.filter(
-    (game) => game.status === 'ready' && game.playerCount === game.maxPlayers
-  );
 
   // TODO: this must be called every few seconds or so to keep the game list updated
   async function fetchGames() {
@@ -40,23 +33,23 @@
         max_players: limit,
       });
       console.log(`Game created: ${JSON.stringify(result)}`);
-      await fetchGames();
     } catch (err) {
       console.error(`Error creating game: ${err.message}`);
       error = `Failed to create game: ${err.message}`;
     }
+    await fetchGames();
   }
 
-  async function joinGame(gameId) {
+  async function joinGame(gameId: number) {
     try {
       error = null;
       const result = await trpc.match.joinGame.mutate({ matchId: gameId });
       console.log(`Joined game: ${JSON.stringify(result)}`);
-      await fetchGames();
     } catch (err) {
       console.error(`Error joining game: ${err.message}`);
       error = `Failed to join game: ${err.message}`;
     }
+    await fetchGames();
   }
 
   async function startGame(gameId) {

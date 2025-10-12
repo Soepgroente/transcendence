@@ -2,6 +2,7 @@
 
 import { GameState, PlayerAction } from './types/gameState';
 
+
 export interface Services {
   jwtUtils: {
     sign: (id: number, email: string) => string;

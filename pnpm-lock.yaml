@@ -106,6 +106,9 @@ importers:
 
   apps/frontend:
     dependencies:
+      '@repo/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@repo/trpc':
         specifier: workspace:*
         version: link:../../packages/trpc-contract

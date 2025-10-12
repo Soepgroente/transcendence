@@ -1,3 +1,4 @@
+import { TRPCError } from '@trpc/server';
 import { createRouter, protectedProcedure } from '../trpc';
 import { z } from 'zod';
 
@@ -14,10 +15,26 @@ export const matchRouter = createRouter({
   list: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.services.match.getAvailableMatches();
   }),
-  //TODO:here should check first if the game is full
+  /**
+   * Join an existing multiplayer game.
+   * @input { matchId: number } - The ID of the match to join.
+   * @returns The updated match information.
+   * @throws Error if the player is already in the match or if joining fails.
+   */
   joinGame: protectedProcedure
     .input(z.object({ matchId: z.number() }))
     .mutation(async ({ input, ctx }) => {
+      if (
+        await ctx.services.dbServices.playerExistsInMatch(
+          input.matchId,
+          ctx.userToken.id
+        )
+      ) {
+        throw new TRPCError({
+          code: 'BAD_REQUEST',
+          message: 'Player already in match',
+        });
+      }
       return await ctx.services.match.joinMultiplayerGame(
         input.matchId,
         ctx.userToken.id

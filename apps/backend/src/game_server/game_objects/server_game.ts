@@ -5,6 +5,7 @@ import { Engine, Scene, Vector3, HavokPlugin, NullEngine } from '@babylonjs/core
 import { EventEmitter } from 'stream';
 import { GameStateManager } from '../game-state-manager';
 import { performance } from 'perf_hooks';
+import { MatchService } from '../../tournament/match';
 import path  from 'path';
 import fs from 'fs/promises';
 
@@ -120,11 +121,14 @@ export class ServerGame extends EventEmitter
 	{
 		//TODO: need to set game state to finished
 		this.gameState.status = 'finished';
+		const winner = this.gameState.players.find(p => p.isAlive);
+		if (winner)
+			MatchService.updateMatchStatus(this.gameState.matchId, 'finished', winner.id);
 		this.gameState.lastUpdate = performance.now();
 		this.updateGameState();
 		this.gameIsRunning = false;
 		this.engine.stopRenderLoop();
-		console.log('Game finished');
+		console.log('Game finished and the winner is', winner?.id);
 	}
 
 	run()
@@ -170,6 +174,7 @@ export class ServerGame extends EventEmitter
 				{
 					console.log('All players ready. Starting game...');
 					this.gameState.status = 'in_progress'
+					MatchService.updateMatchStatus(this.gameState.matchId, 'playing');
 					// Give clients time to show countdown
 					setTimeout(() =>
 					{
@@ -270,11 +275,11 @@ export class ServerGame extends EventEmitter
 
 export async function loadFileText(filePath: string): Promise<string> {
 	try {
-	const absPath = path.resolve(__dirname, filePath);
+		const absPath = path.resolve(__dirname, filePath);
 	return await fs.readFile(absPath, 'utf-8');
 	} catch (err: any) {
-	console.error(`Failed to load file: ${filePath}`, err);
-	throw new Error(`Map file not found or unreadable: ${filePath}`);
+		console.error(`Failed to load file: ${filePath}`, err);
+		throw new Error(`Map file not found or unreadable: ${filePath}`);
 	}
 }
 
