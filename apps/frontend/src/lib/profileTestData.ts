@@ -55,7 +55,16 @@ export interface Tournament {
   playerLimit: number;
   players: number[];
   status: TournamentStatus;
-  createdAt: Date;
+  victor?: number;
+  date: Date;
+}
+
+export interface TournamentHistoryEntry {
+  id: number;
+  date: Date;
+  tournamentName: string;
+  playerLimit: number;
+  isWin: boolean;
 }
 
 export const testUsers: User[] = [
@@ -179,7 +188,7 @@ export const testTournaments: Tournament[] = [
     playerLimit: 4,
     players: [1],
     status: TournamentStatus.WAITING,
-    createdAt: new Date('2024-09-15')
+    date: new Date('2024-09-15')
   },
   {
     id: 2,
@@ -188,7 +197,7 @@ export const testTournaments: Tournament[] = [
     playerLimit: 2,
     players: [2, 3],
     status: TournamentStatus.ONGOING,
-    createdAt: new Date('2024-09-10')
+    date: new Date('2024-09-10')
   },
   {
     id: 3,
@@ -197,7 +206,8 @@ export const testTournaments: Tournament[] = [
     playerLimit: 4,
     players: [3, 1, 2, 4],
     status: TournamentStatus.COMPLETED,
-    createdAt: new Date('2024-09-05')
+    victor: 1,
+    date: new Date('2024-09-05')
   },
   {
     id: 4,
@@ -206,7 +216,7 @@ export const testTournaments: Tournament[] = [
     playerLimit: 2,
     players: [4, 1],
     status: TournamentStatus.READY,
-    createdAt: new Date('2024-09-18')
+    date: new Date('2024-09-18')
   },
   {
     id: 5,
@@ -215,7 +225,7 @@ export const testTournaments: Tournament[] = [
     playerLimit: 6,
     players: [1, 2],
     status: TournamentStatus.WAITING,
-    createdAt: new Date('2024-09-17')
+    date: new Date('2024-09-17')
   },
   {
     id: 6,
@@ -224,7 +234,7 @@ export const testTournaments: Tournament[] = [
     playerLimit: 4,
     players: [2, 3, 4, 1],
     status: TournamentStatus.ONGOING,
-    createdAt: new Date('2024-09-12')
+    date: new Date('2024-09-12')
   },
   {
     id: 7,
@@ -233,7 +243,37 @@ export const testTournaments: Tournament[] = [
     playerLimit: 6,
     players: [3, 4, 1],
     status: TournamentStatus.WAITING,
-    createdAt: new Date('2024-09-16')
+    date: new Date('2024-09-16')
+  },
+  {
+    id: 8,
+    creator: 1,
+    name: "Spring Classic",
+    playerLimit: 4,
+    players: [1, 2, 3, 4],
+    status: TournamentStatus.COMPLETED,
+    victor: 3,
+    date: new Date('2024-08-28')
+  },
+  {
+    id: 9,
+    creator: 4,
+    name: "Elite Duel",
+    playerLimit: 2,
+    players: [4, 2],
+    status: TournamentStatus.COMPLETED,
+    victor: 2,
+    date: new Date('2024-08-20')
+  },
+  {
+    id: 10,
+    creator: 2,
+    name: "Winter Championship",
+    playerLimit: 4,
+    players: [2, 1, 3, 4],
+    status: TournamentStatus.COMPLETED,
+    victor: 4,
+    date: new Date('2024-08-15')
   }
 ]
 
@@ -291,6 +331,24 @@ export function getUserMatchHistory(userId: number): MatchHistoryEntry[] {
       isWin: participation.placement === 1
     }
   }).filter(entry => entry != null) as MatchHistoryEntry[];
+
+  return entries;
+}
+
+export function getUserTournamentHistory(userId: number): TournamentHistoryEntry[] {
+  const userTournaments = testTournaments.filter(tournament => 
+    tournament.players.includes(userId) && tournament.status === TournamentStatus.COMPLETED
+  );
+
+  const entries = userTournaments.map(tournament => {
+    return {
+      id: tournament.id,
+      date: tournament.date,
+      tournamentName: tournament.name,
+      playerLimit: tournament.playerLimit,
+      isWin: tournament.victor === userId
+    }
+  });
 
   return entries;
 }
