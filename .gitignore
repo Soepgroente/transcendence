@@ -10,7 +10,7 @@ pids
 
 *dist/
 *.env
-*.db
+*.db*
 .idea
 
 # node-waf configuration

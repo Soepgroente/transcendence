@@ -333,10 +333,37 @@ export class TournamentService {
           id: match.id,
           players: players,
           victor: winner,
-          status: 'waiting', // TODO: implement match status properly
+          status: match.status,
         };
       })
     );
     return { tournament: tournament, matches: matchesWithPlayers };
+  }
+
+  async endTournament(tournamentName: string, playerId: number) {
+    const tournament = await tournamentExists(tournamentName);
+    if (tournament.status !== 'ongoing' && tournament.status !== 'ready') {
+      return null;
+    }
+    const isInTournament = await isPlayerInTournament(tournament.id, playerId);
+    if (!isInTournament) {
+      throw new TRPCError({
+        code: 'FORBIDDEN',
+        message: 'You are not a participant of this tournament',
+      });
+    }
+    try {
+      await db
+        .update(tournamentTable)
+        .set({ status: 'completed', victor: playerId })
+        .where(eq(tournamentTable.name, tournamentName));
+      return { message: 'Tournament ended successfully' };
+    } catch (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Failed to end tournament',
+        cause: error,
+      });
+    }
   }
 }

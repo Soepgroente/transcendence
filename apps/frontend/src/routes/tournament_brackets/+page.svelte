@@ -48,7 +48,7 @@
 
     for (let round = 1; round <= totalRounds; round++) {
       const matchesInRound = playerCount / Math.pow(2, round);
-      const roundMatches = [];
+      const roundMatches: TournamentMatches[] = [];
 
       for (let i = 0; i < matchesInRound; i++) {
         if (matches[matchIndex]) {
@@ -63,7 +63,7 @@
               { id: 0, userAlias: 'TBD', placement: 0 },
             ],
             victor: null,
-            status: 'pending',
+            status: 'waiting',
           });
         }
       }
@@ -108,19 +108,7 @@
     return match.players.find((p) => p.id !== $currentUser.id) || null;
   }
 
-  async function joinGame(gameId) {
-    console.log(`Attempting to join game ${gameId}...`);
-    try {
-      error = null;
-      const result = await trpc.match.joinGame.mutate({ matchId: gameId });
-      console.log(`Joined game: ${JSON.stringify(result)}`);
-    } catch (err) {
-      console.error(`Error joining game: ${err.message}`);
-      error = `Failed to join game: ${err.message}`;
-    }
-  }
-
-  async function startGame(gameId) {
+  async function startGame(gameId: number) {
     try {
       error = null;
       console.log(`Starting game ${gameId}...`);
@@ -130,6 +118,12 @@
       console.error(`Error starting game: ${err.message}`);
       error = `Failed to start game: ${err.message}`;
     }
+  }
+  async function submitTournamentWinner(victor: TournamentPlayer) {
+    // Placeholder for any side effects when a tournament winner is determined
+    await trpc.tournament.endTournament.mutate({ name: bracket.tournament.name, playerId: victor.id });
+    console.log(`Tournament Winner: ${victor.userAlias}`);
+    
   }
 
   onMount(async () => {
@@ -212,7 +206,7 @@
       </div>
 
       <!-- My Active Match Alert -->
-      {#if myActiveMatch}
+      {#if myActiveMatch && myActiveMatch.status !== 'finished'}
         {@const opponent = getOpponent(myActiveMatch)}
         <div
           class="bg-gradient-to-r from-green-600 to-green-800 border-2 border-green-400 rounded-2xl p-6 mb-8 shadow-2xl"
@@ -221,18 +215,21 @@
             <h2 class="text-xl text-green-100 mb-4">🎮 YOUR MATCH IS READY!</h2>
             <div class="bg-black/40 rounded-xl p-4 mb-4">
               <p class="text-sm text-white mb-2">
-          <span class="text-green-400">YOU</span>
-          <span class="text-cyan-400 mx-2">VS</span>
-          <span class="text-red-400"
-            >{opponent?.userAlias || 'UNKNOWN'}</span
-          >
+                <span class="text-green-400">YOU</span>
+                <span class="text-cyan-400 mx-2">VS</span>
+                <span class="text-red-400"
+                  >{opponent?.userAlias || 'UNKNOWN'}</span
+                >
+                <span class="text-cyan-400 mx-2">
+                  status: {myActiveMatch.status}</span
+                >
               </p>
             </div>
             <button
               on:click={() => startGame(myActiveMatch.id)}
               class="px-8 py-4 bg-cyan-500 hover:bg-cyan-600 active:scale-95 shadow-lg transition-transform rounded-xl font-bold text-black text-sm"
             >
-              JOIN GAME NOW!
+              START GAME NOW!
             </button>
           </div>
         </div>
@@ -330,7 +327,7 @@
                     <div class="mt-3 flex items-center justify-between">
                       <span
                         class="inline-flex items-center px-2 py-1 rounded-lg text-[10px] font-bold uppercase
-                          {match.status === 'completed'
+                          {match.status === 'finished'
                           ? 'bg-green-500 text-black'
                           : match.status === 'waiting' ||
                               match.status === 'ready'
@@ -339,18 +336,17 @@
                       >
                         {match.status}
                       </span>
-
-                      {#if isMyMatch(match) && (match.status === 'ready' || match.status === 'waiting')}
-                        <button
-                          on:click={() => joinGame(match.id)}
-                          class="px-3 py-1 bg-cyan-500 hover:bg-cyan-600 active:scale-95 rounded-lg text-[10px] font-bold text-black transition-transform"
-                        >
-                          JOIN
-                        </button>
-                      {/if}
                     </div>
+                    {#if match.status === 'finished' && match.victor}
+                      {#if round.name === 'FINALS'}
+                        <div
+                          class="mt-2 text-center text-[10px] text-yellow-400"
+                        >
+                          CHAMPION: {match.victor.userAlias}
+                          {submitTournamentWinner(match.victor)}
+                        </div>
+                      {/if}
 
-                    {#if match.status === 'completed' && match.victor}
                       <div class="mt-2 text-center text-[10px] text-green-400">
                         WINNER: {match.victor.userAlias}
                       </div>

@@ -71,4 +71,15 @@ export const tournamentRouter = createRouter({
       }
       return bracket || null;
     }),
+
+  endTournament: protectedProcedure
+    .input(
+      z.object({ name: tournamentNameSchema, playerId: z.number().positive() })
+    )
+    .mutation(async ({ input, ctx }) => {
+      return await ctx.services.tournament.endTournament(
+        input.name,
+        input.playerId
+      );
+    }),
 });
