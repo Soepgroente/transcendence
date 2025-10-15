@@ -9,8 +9,8 @@ export class Ball
 	private aggregate:	PhysicsAggregate;
 	private speed: 		number;
 	
-	private static baseSpeed = 10;
-	private static speedIncrement = 0.3;
+	private static baseSpeed: number = 12;
+	private static speedIncrement: number = 0.3;
 
 	constructor(_center: Vector3, _diameter: number, scene: Scene)
 	{

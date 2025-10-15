@@ -170,7 +170,7 @@ export class ServerGame extends EventEmitter
 			const player = this.gameState.players.find(pl => pl.id == action.playerId);
 			if (player)
 			{
-				if (action.action === 'ready')
+				if (action.action == 'ready')
 				{
 					player.isReady = true;
 					console.log(`Player ${action.playerId} is ready.`);
@@ -185,7 +185,7 @@ export class ServerGame extends EventEmitter
 						this.gameIsRunning = true;
 						this.engine.stopRenderLoop();
 						this.engine.runRenderLoop(this.gameLoop.bind(this));
-					}, 2100);
+					}, 3100);
 				}
 			}
 		}
@@ -236,6 +236,7 @@ export class ServerGame extends EventEmitter
 					}
 					this.balls[i].destroy();
 					this.balls.splice(i, 1);
+					this.gameState.balls.splice(i, 1);
 					i--;
 					scored = true;
 					break;
@@ -293,7 +294,7 @@ export async function loadFileText(filePath: string): Promise<string> {
 
 /*	Destroys the resources associated with the game	*/
 
-export async function destroyGame(game: ServerGame)
+export function destroyGame(game: ServerGame)
 {
 	game.dispose();
 }

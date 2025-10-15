@@ -183,7 +183,7 @@ export class ClientGame
 		waitingText.verticalAlignment = TextBlock.VERTICAL_ALIGNMENT_CENTER;
 		advancedTexture.addControl(waitingText);
 		while (true) 
-		{	
+		{
 			await new Promise(resolve => setTimeout(resolve, 100));
 			if (this.gameState.status == 'in_progress')
 			{
@@ -247,7 +247,7 @@ export class ClientGame
 			{
 				countdownText.text = sequence[step];
 				step++;
-				setTimeout(next, 500);
+				setTimeout(next, 750);
 			}
 			else
 			{
@@ -458,7 +458,7 @@ async function loadFileText(filePath: string): Promise<string>
 
 /*	Destroys the resources associated with the game	*/
 
-export async function destroyGame(game: ClientGame)
+export function destroyGame(game: ClientGame)
 {
 	game.dispose();
 }
