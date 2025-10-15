@@ -8,8 +8,7 @@ export class Ball
 	private diameter:	number;
 	private aggregate:	PhysicsAggregate;
 	private speed: 		number;
-	private originalPosition: Vector3;
-
+	
 	private static baseSpeed: number = 12;
 	private static speedIncrement: number = 0.3;
 
