@@ -48,6 +48,7 @@ export function createWalls(scene: Scene, walls: Wall[], map: any)
 	{
 		return;
 	}
+	console.log('Creating walls from map data:', map.walls);
 	for (let i = 0; i < map.walls.length; i++)
 	{
 		walls.push(new Wall

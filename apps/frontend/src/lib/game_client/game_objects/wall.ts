@@ -13,6 +13,7 @@ export class Wall
 			scene
 		);
 		this.mesh.position = _position;
+		this.mesh.rotate(Vector3.Up(), Math.atan2(_surfaceNormal.x, _surfaceNormal.z) + Math.PI / 2);
 
 		const mat = new StandardMaterial('wallMat', this.mesh.getScene());
 		mat.diffuseColor = _color;

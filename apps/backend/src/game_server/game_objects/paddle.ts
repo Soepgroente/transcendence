@@ -48,34 +48,6 @@ export class Paddle
 	{
 		if (this.frozen) return;
 
-		// const dx = this.upDirection.x * this.velocity;
-		// const dz = this.upDirection.z * this.velocity;
-		// const distance = Math.hypot(dx, dz);
-
-		// if (distance == 0) return;
-
-		// const stepSize = 0.08;
-		// const steps = Math.max(1, Math.ceil(distance / stepSize));
-		// const stepX = dx / steps;
-		// const stepZ = dz / steps;
-
-		// for (let s = 0; s < steps; s++)
-		// {
-		// 	this.mesh.position.x += stepX;
-		// 	this.mesh.position.z += stepZ;
-
-		// 	this.mesh.computeWorldMatrix(true);
-		// 	for (const wall of walls)
-		// 	{
-		// 		if (meshesIntersect(this.mesh, wall.getMesh()) == true)
-		// 		{
-		// 			this.mesh.position.x -= stepX;
-		// 			this.mesh.position.z -= stepZ;
-		// 			this.velocity = 0;
-		// 			return;
-		// 		}
-		// 	}
-		// }
 		this.mesh.position.x += this.upDirection.x * this.velocity;
 		this.mesh.position.z += this.upDirection.z * this.velocity;
 

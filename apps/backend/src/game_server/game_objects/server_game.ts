@@ -109,7 +109,7 @@ export class ServerGame extends EventEmitter
 		createGround(scene, this.dimensions);
 		createBalls(scene, this.balls, map);
 		createSurroundingWalls(scene, this.walls, this.dimensions);
-		createWalls(scene, this.walls, map.walls);
+		createWalls(scene, this.walls, map);
 		createGoals(scene, this.goals, map);
 		createPaddles(scene, this.paddles, map.goals);
 		createPlayers(this.players, this.goals, this.paddles);

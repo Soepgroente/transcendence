@@ -62,6 +62,7 @@ export function createWalls(scene: Scene, walls: Wall[], map: any)
 	{
 		return;
 	}
+	console.log('Creating walls from map data:', map.walls);
 	for (let i = 0; i < map.walls.length; i++)
 	{
 		walls.push(new Wall
@@ -69,8 +70,8 @@ export function createWalls(scene: Scene, walls: Wall[], map: any)
 			jsonToVector3(map.walls[i].dimensions),
 			jsonToVector3(map.walls[i].location),
 			jsonToVector3(map.walls[i].surfaceNormal),
-			ColorMap[map.walls[i].color] || ColorMap['black'],
-			map.walls[i].opacity || 1,
+			ColorMap['black'],
+			1,
 			scene
 		));
 	}
