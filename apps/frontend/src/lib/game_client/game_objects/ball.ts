@@ -10,7 +10,7 @@ export class Ball
 		const mat = new StandardMaterial('ballMat', this.mesh.getScene());
 
 		mat.diffuseColor = _color;
-		mat.maxSimultaneousLights = 16;
+		mat.maxSimultaneousLights = 16; // 4
 		this.mesh.position = _center;
 		this.mesh.material = mat;
 	}

@@ -153,7 +153,7 @@ export function	createGround(scene: Scene, dimensions: number[])
 	const mat = new StandardMaterial('floor', ground.getScene());
 	mat.diffuseColor = Color3.Gray();
 	mat.ambientColor = Color3.Gray();
-	mat.maxSimultaneousLights = 16;
+	mat.maxSimultaneousLights = 16; //4
 	ground.material = mat;
 }
 

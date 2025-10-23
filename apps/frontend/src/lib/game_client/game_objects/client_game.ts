@@ -51,11 +51,25 @@ export class ClientGame
 			console.error('Game canvas not found');
 		}
 		this.dimensions = [0, 0];
-		this.engine = new Engine(this.gameCanvas, true, {antialias: true});
+		// disable antialias by default to reduce GPU load on older machines
+		this.engine = new Engine(this.gameCanvas, false, {antialias: false});
 		this.scene = new Scene(this.engine);
 		this.userId = userId;
 		console.log('Game_client started');
 	}
+	
+	//not sure about this yet
+	// public resize(width: number, height: number, dpr: number)
+	// {
+	// 	try {
+	// 		const cap = Math.min(Math.max(dpr || 1, 1), 2); // clamp DPR between 1 and 2
+	// 		// larger scaling levels reduce internal render resolution and therefore GPU load
+	// 		this.engine.setHardwareScalingLevel(cap);
+	// 		this.engine.resize();
+	// 	} catch (err) {
+	// 		console.warn('Error during resize:', err);
+	// 	}
+	// }
 
 	private async loadSounds()
 	{

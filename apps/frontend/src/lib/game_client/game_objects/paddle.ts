@@ -10,12 +10,8 @@ export class Paddle
 	constructor(dimensions: Vector3, _position: Vector3, surfaceNorm: Vector3, _color: Color3, scene: Scene)
 	{
 		this.surfaceNorm = surfaceNorm;
-		this.mesh = MeshBuilder.CreateBox
-		(
-			'box', 
-			{width: dimensions.x, height: dimensions.y, depth: dimensions.z},
-			scene
-		);
+		//vscode complains about new line here
+		this.mesh = MeshBuilder.CreateBox('box', { width: dimensions.x, height: dimensions.y, depth: dimensions.z }, scene);
 		this.mesh.position = _position;
 		this.mesh.position.y = dimensions.y / 2;
 		this.mesh.rotate(Vector3.Up(), Math.atan2(surfaceNorm.x, surfaceNorm.z) + Math.PI / 2);
@@ -25,7 +21,7 @@ export class Paddle
 		mat.diffuseColor = _color;
 		mat.ambientColor = Color3.Black();
 		mat.alpha = 0.9;
-		mat.maxSimultaneousLights = 16;
+		mat.maxSimultaneousLights = 16; // 4
 		this.mesh.material = mat;
 	}
 
