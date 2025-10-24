@@ -8,7 +8,8 @@ export class Ball
 	private diameter:	number;
 	private aggregate:	PhysicsAggregate;
 	private speed: 		number;
-	
+	private originalPosition: Vector3;
+
 	private static baseSpeed: number = 12;
 	private static speedIncrement: number = 0.3;
 
@@ -16,6 +17,7 @@ export class Ball
 	{
 		this.mesh = MeshBuilder.CreateSphere('sphere', {diameter: _diameter}, scene);
 		this.mesh.position = _center;
+		this.originalPosition = _center.clone();
 
 		this.aggregate = new PhysicsAggregate(
 			this.mesh,
@@ -79,11 +81,6 @@ export class Ball
 			}
 		}
 		this.aggregate.body.setLinearVelocity(this.velocity);
-	}
-
-	reset()
-	{
-		this.speed = Ball.baseSpeed;
 	}
 
 	getMesh(): Mesh

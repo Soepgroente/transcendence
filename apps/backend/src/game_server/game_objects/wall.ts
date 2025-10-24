@@ -13,7 +13,7 @@ export class Wall
 		);
 		this.mesh.position = _position;
 
-		this.mesh.rotate(Vector3.Up(), Math.atan2(_surfaceNormal.x, _surfaceNormal.z) + Math.PI / 2);
+		// this.mesh.rotate(Vector3.Up(), Math.atan2(_surfaceNormal.x, _surfaceNormal.z) + Math.PI / 2);
 		new PhysicsAggregate(
 			this.mesh,
 			PhysicsShapeType.BOX,

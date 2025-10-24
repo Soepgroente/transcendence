@@ -237,8 +237,11 @@ export class ServerGame extends EventEmitter
 					}
 					this.balls[i].destroy();
 					this.balls.splice(i, 1);
-					this.gameState.balls.splice(i, 1);
-					i--;
+					this.balls.push(new Ball
+					(
+						jsonToVector3(this.jsonMap.balls[i].location),
+						0.5, this.scene
+					));
 					scored = true;
 					break;
 				}
@@ -246,10 +249,6 @@ export class ServerGame extends EventEmitter
 			if (scored == false)
 			{
 				this.balls[i].update(this.paddles);
-			}
-			if (this.balls.length == 0)
-			{
-				createBalls(this.scene, this.balls, this.jsonMap);
 			}
 			scored = false;
 		}
