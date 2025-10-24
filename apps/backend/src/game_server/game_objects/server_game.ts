@@ -153,6 +153,7 @@ export class ServerGame extends EventEmitter
 			this.gameState.players[i].lives = this.players[i].getLives?.() ?? this.gameState.players[i].lives;
 			this.gameState.players[i].isAlive = this.players[i].isAlive?.() ?? false;
 		}
+		this.gameState.balls = [];
 		this.gameState.balls = this.balls.map(ball => {
 			const pos = ball.getPosition();
 			return { x: pos.x, z: pos.z };
