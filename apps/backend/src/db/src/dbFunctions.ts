@@ -400,7 +400,57 @@ export async function updateUserAvatar(userId: number, newPath: string): Promise
   } catch (error) {
     throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'updateAvatarPath error',
+          message: 'updateUserAvatar error',
+          cause: error,
+    });
+  }
+}
+
+export async function updateUserAlias(userId: number, newAlias: string): Promise<string> {
+  if (!userId || !newAlias) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'updateUserAlias error: user ID and new alias must be provided',
+      cause: 'user ID is not valid',
+    });
+  }
+  try {
+    const [updatedAlias] = await db
+      .update(usersTable)
+      .set({ alias: newAlias })
+      .where(eq(usersTable.id, userId))
+      .returning({ alias: usersTable.alias });
+    
+    return updatedAlias.alias;
+  } catch (error) {
+    throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'updateUserAlias error',
+          cause: error,
+    });
+  }
+}
+
+export async function updateUserEmail(userId: number, newEmail: string): Promise<string> {
+  if (!userId || !newEmail) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'updateUserEmail error: user ID and new email must be provided',
+      cause: 'user ID is not valid',
+    });
+  }
+  try {
+    const [updatedEmail] = await db
+      .update(usersTable)
+      .set({ email: newEmail })
+      .where(eq(usersTable.id, userId))
+      .returning({ email: usersTable.email });
+    
+    return updatedEmail.email;
+  } catch (error) {
+    throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'updateUserEmail error',
           cause: error,
     });
   }

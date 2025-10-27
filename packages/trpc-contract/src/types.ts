@@ -26,6 +26,8 @@ export interface Services {
     getUserFriends: (userId: number) => Promise<{ alias: string }[]>;
     getUserAvatar: (userId: number) => Promise<string>;
     updateUserAvatar: (userId: number, newPath: string) => Promise<string>;
+    updateUserAlias: (userId: number, newAlias: string) => Promise<string>;
+    updateUserEmail: (userId: number, newEmail: string) => Promise<string>;
   };
   gameStateManager: {
     subscribe: (

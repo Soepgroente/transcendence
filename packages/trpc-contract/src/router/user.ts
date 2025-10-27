@@ -105,6 +105,47 @@ export const userRouter = createRouter({
           message: 'Error in updating user avatar path'
         });
       }
+    }),
 
-    })
+    updateUserAlias: protectedProcedure
+    .input(z.object({ alias: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const newAlias = await ctx.services.dbServices.updateUserAlias(
+          ctx.userToken.id,
+          input.alias
+        );
+        return {
+          status: 200,
+          message: 'User alias updated successfully',
+          data: newAlias,
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Error in updating user alias'
+        });
+      }
+    }),
+
+    updateUserEmail: protectedProcedure
+    .input(z.object({ email: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const newEmail = await ctx.services.dbServices.updateUserEmail(
+          ctx.userToken.id,
+          input.email
+        );
+        return {
+          status: 200,
+          message: 'User email address updated successfully',
+          data: newEmail,
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Error in updating user email address'
+        });
+      }
+    }),
 });
