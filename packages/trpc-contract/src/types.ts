@@ -28,6 +28,7 @@ export interface Services {
     updateUserAvatar: (userId: number, newPath: string) => Promise<string>;
     updateUserAlias: (userId: number, newAlias: string) => Promise<string>;
     updateUserEmail: (userId: number, newEmail: string) => Promise<string>;
+    updateUserPassword: (userId: number, newPassword: string) => Promise<boolean>;
   };
   gameStateManager: {
     subscribe: (

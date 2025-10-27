@@ -10,6 +10,7 @@ import { db } from './dbClientInit';
 import { eq, and, inArray } from 'drizzle-orm';
 import { ExistingUser, Match, MatchHistoryEntry, TournamentHistoryEntry } from '@repo/db/dbTypes';
 import { TRPCError } from '@trpc/server';
+import { hashPassword } from '../../auth/password';
 
 
 /**
@@ -386,7 +387,7 @@ export async function updateUserAvatar(userId: number, newPath: string): Promise
     throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
       message: 'updateUserAvatar error: user ID and new path must be provided',
-      cause: 'user ID is not valid',
+      cause: 'user ID or avatar path is not valid',
     });
   }
   try {
@@ -411,7 +412,7 @@ export async function updateUserAlias(userId: number, newAlias: string): Promise
     throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
       message: 'updateUserAlias error: user ID and new alias must be provided',
-      cause: 'user ID is not valid',
+      cause: 'user ID or alias is not valid',
     });
   }
   try {
@@ -436,14 +437,17 @@ export async function updateUserEmail(userId: number, newEmail: string): Promise
     throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
       message: 'updateUserEmail error: user ID and new email must be provided',
-      cause: 'user ID is not valid',
+      cause: 'user ID or email is not valid',
     });
   }
   try {
     const [updatedEmail] = await db
       .update(usersTable)
       .set({ email: newEmail })
-      .where(eq(usersTable.id, userId))
+      .where(and(
+        eq(usersTable.id, userId),
+        eq(usersTable.googleId, "")
+      ))
       .returning({ email: usersTable.email });
     
     return updatedEmail.email;
@@ -451,6 +455,34 @@ export async function updateUserEmail(userId: number, newEmail: string): Promise
     throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'updateUserEmail error',
+          cause: error,
+    });
+  }
+}
+
+export async function updateUserPassword(userId: number, newPassword: string): Promise<boolean> {
+  if (!userId || !newPassword) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'updateUserPassword error: user ID and new password must be provided',
+      cause: 'user ID or password is not valid',
+    });
+  }
+  try {
+    const newHashedPassword = await hashPassword(newPassword);
+    await db
+      .update(usersTable)
+      .set({ password: newHashedPassword })
+      .where(and(
+        eq(usersTable.id, userId),
+        eq(usersTable.googleId, "")
+      ))
+    
+    return true;
+  } catch (error) {
+    throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'updateUserPassword error',
           cause: error,
     });
   }
@@ -489,4 +521,5 @@ export async function disableUser2FA(userId: number) {
   } catch (error) {
     console.error('disableUser2FA error:', error);
     throw error;
-  }}
+  }
+}

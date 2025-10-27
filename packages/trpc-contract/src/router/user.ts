@@ -148,4 +148,25 @@ export const userRouter = createRouter({
         });
       }
     }),
+
+    updateUserPassword: protectedProcedure
+    .input(z.object({ password: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const success = await ctx.services.dbServices.updateUserPassword(
+          ctx.userToken.id,
+          input.password
+        );
+        return {
+          status: 200,
+          message: 'User password updated successfully',
+          data: success,
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Error in updating user password'
+        });
+      }
+    }),
 });
