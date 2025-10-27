@@ -338,19 +338,70 @@ export async function getUserFriends(userId: number): Promise<{alias: string}[]>
   }
   try {
     const friends = await db
-    .select({
-      alias: usersTable.alias,
-    })
-    .from(friendshipsTable)
-    .innerJoin(usersTable, eq(friendshipsTable.friendId, usersTable.id))
-    .where(eq(friendshipsTable.userId, userId));
+      .select({
+        alias: usersTable.alias,
+      })
+      .from(friendshipsTable)
+      .innerJoin(usersTable, eq(friendshipsTable.friendId, usersTable.id))
+      .where(eq(friendshipsTable.userId, userId));
 
     return friends;
   } catch (error) {
-throw new TRPCError({
+    throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'getUserFriends error',
+          cause: error,
+    });
+  }
+}
+
+export async function getUserAvatar(userId: number): Promise<string> {
+  if (!userId) {
+    throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
-      message: 'getUserFriends error',
-      cause: error,
+      message: 'getUserAvatar error: user ID must be provided',
+      cause: 'user ID is not valid',
+    });
+  }
+  try {
+    const [imgPath] = await db
+      .select({
+        avatarPath: usersTable.avatarPath
+      })
+      .from(usersTable)
+      .where(eq(usersTable.id, userId));
+    
+    return imgPath.avatarPath;
+  } catch (error) {
+    throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'getAvatarPath error',
+          cause: error,
+    });
+  }
+}
+
+export async function updateUserAvatar(userId: number, newPath: string): Promise<string> {
+  if (!userId || !newPath) {
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'updateUserAvatar error: user ID and new path must be provided',
+      cause: 'user ID is not valid',
+    });
+  }
+  try {
+    const [updatedAvatarPath] = await db
+      .update(usersTable)
+      .set({ avatarPath: newPath })
+      .where(eq(usersTable.id, userId))
+      .returning({ avatarPath: usersTable.avatarPath });
+    
+    return updatedAvatarPath.avatarPath;
+  } catch (error) {
+    throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'updateAvatarPath error',
+          cause: error,
     });
   }
 }

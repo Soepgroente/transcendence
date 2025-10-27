@@ -1,5 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import { createRouter, protectedProcedure } from '../trpc';
+import z from 'zod';
 
 /**
  * User router for handling user-related operations.
@@ -33,7 +34,7 @@ export const userRouter = createRouter({
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Error in fetching user match history'
-      })
+      });
     }
   }),
 
@@ -49,7 +50,7 @@ export const userRouter = createRouter({
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Error in fetching user tournament history'
-      })
+      });
     }
   }),
 
@@ -65,7 +66,45 @@ export const userRouter = createRouter({
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
         message: 'Error in fetching user friends list'
-      })
+      });
     }
-  })
+  }),
+
+    getUserAvatar: protectedProcedure.query(async ({ ctx }) => {
+    try {
+      const avatarPath = await ctx.services.dbServices.getUserAvatar(ctx.userToken.id);
+      return {
+        status: 200,
+        message: 'User avatar path fetched successfully',
+        data: avatarPath,
+      };
+    } catch (error) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Error in fetching user avatar path'
+      });
+    }
+  }),
+
+  updateUserAvatar: protectedProcedure
+    .input(z.object({ newPath: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const newAvatarPath = await ctx.services.dbServices.updateUserAvatar(
+          ctx.userToken.id,
+          input.newPath
+        );
+        return {
+          status: 200,
+          message: 'User avatar path updated successfully',
+          data: newAvatarPath,
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Error in updating user avatar path'
+        });
+      }
+
+    })
 });

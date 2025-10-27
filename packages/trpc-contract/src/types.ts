@@ -24,6 +24,8 @@ export interface Services {
     getUserMatchHistory: (userId: number) => Promise<MatchHistoryEntry[]>;
     getUserTournamentHistory: (userId: number) => Promise<TournamentHistoryEntry[]>;
     getUserFriends: (userId: number) => Promise<{ alias: string }[]>;
+    getUserAvatar: (userId: number) => Promise<string>;
+    updateUserAvatar: (userId: number, newPath: string) => Promise<string>;
   };
   gameStateManager: {
     subscribe: (

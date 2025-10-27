@@ -8,6 +8,7 @@
 	import type { MatchHistoryEntry, TournamentHistoryEntry } from "@repo/db/dbTypes";
 	import { logout } from "$lib/auth/auth"
 		
+	let userAvatar = $state("");
 	let userStat = $state({ wins: 0, losses: 0 });
 	let matchHistoryTotal = $state(0);
 	let userMatchHistory = $state([]);
@@ -18,6 +19,12 @@
 	async function loadUserData() {
 		try {
 			loading = true;
+
+			const avatarPathRes = await trpc.user.getUserAvatar.query();
+
+			if (avatarPathRes.status === 200) {
+				userAvatar = avatarPathRes.data;
+			}
 
 			const [matchHistoryRes, tournamentHistoryRes, friendsRes] = await Promise.all([
 				trpc.user.getUserMatchHistory.query(),
@@ -55,7 +62,7 @@
 		...($currentUser || {}),
 		wins: userStat.wins,
 		losses: userStat.losses ,
-		avatarPath: "avatar_default.jpeg"
+		avatarPath: userAvatar
 	})
 
 	function formatDate(date_str: string) {
@@ -105,6 +112,9 @@
 		{:else}
 			<button onclick={() => logout()} class="top-4 left-4 bg-gray-700 text-white px-3 py-2 rounded">
 				Logout
+			</button>
+			<button onclick={() => {}} class="top-4 bg-gray-700 text-white px-3 py-2 rounded">
+				Edit
 			</button>
 			<!-- Section of info with alias and avatar on the left and wins/losses on the right of the page -->
 			<header class="flex flex-col pt-2 md:flex-row justify-between items-center text-gray-300">

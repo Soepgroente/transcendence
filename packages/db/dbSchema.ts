@@ -16,9 +16,8 @@ export const usersTable = sqliteTable('users_table', {
   alias: text().notNull().unique(),
   password: text().notNull(),
   name: text(),
-  email: text().notNull().unique(), // Do we want email to be a mandatory field?
-  avatarPath: text().default('avatar_default'),
-  backgroundPath: text().default('background_default'),
+  email: text().notNull().unique(),
+  avatarPath: text().notNull().default('avatar_default.jpeg'),
   googleId: text(),
   twofa_secret: text(),
   twofa_enabled: int().default(0)
