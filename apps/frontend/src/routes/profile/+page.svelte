@@ -15,6 +15,11 @@
 	let userTournamentHistory = $state([]);
 	let userFriends = $state([]);
 	let loading = $state(true);
+	let editOverlay = $state(false);
+	let updatedAlias = $state("");
+	let updatedEmail = $state("");
+	let updatedPassword = $state("");
+	let updatedAvatar = $state("");
 
 	async function loadUserData() {
 		try {
@@ -65,6 +70,38 @@
 		avatarPath: userAvatar
 	})
 
+	function openEditOverlay() {
+		editOverlay = true;
+	}
+
+	async function updateInfo(updatedField: string) {
+		try {
+			let res;
+
+			switch (updatedField) {
+				case 'alias':
+					res = await trpc.user.updateUserAlias.mutate({ alias: updatedAlias });
+					break
+				case 'email':
+                    res = await trpc.user.updateUserEmail.mutate({ email: updatedEmail });
+                    break;
+                case 'password':
+                    res = await trpc.user.updateUserPassword.mutate({ password: updatedPassword });
+                    break;
+                case 'avatarPath':
+                    res = await trpc.user.updateUserAvatar.mutate({ newPath: updatedAvatar });
+                    break;
+			}
+
+			if (res?.status === 200) {
+				await loadUserData();
+				alert(`${updatedField} was updated successfully\nPlease log in again to reflect all changes`);
+			}
+		} catch (error) {
+			console.error(`Failed to update user ${updatedField}: `, error);
+		}
+	}
+
 	function formatDate(date_str: string) {
 
 		let date = new Date(date_str);
@@ -110,11 +147,15 @@
 				</div>
 			</div>
 		{:else}
-			<button onclick={() => logout()} class="top-4 left-4 bg-gray-700 text-white px-3 py-2 rounded">
+			<button 
+				onclick={() => logout()}
+				class="top-4 left-4 bg-gray-700 text-white px-3 py-2 rounded">
 				Logout
 			</button>
-			<button onclick={() => {}} class="top-4 bg-gray-700 text-white px-3 py-2 rounded">
-				Edit
+			<button 
+				onclick={() => openEditOverlay()}
+				class="top-4 bg-gray-700 text-white px-3 py-2 rounded">
+				Edit info
 			</button>
 			<!-- Section of info with alias and avatar on the left and wins/losses on the right of the page -->
 			<header class="flex flex-col pt-2 md:flex-row justify-between items-center text-gray-300">
@@ -137,13 +178,19 @@
 			
 			<!-- Lobbies and Tournaments buttons section - They redirect to the corresponding sections below -->
 			<nav class="text-xs sm:text-sm md:text-md lg:text-lg my-6">
-				<button onclick={() => goto('/game_lobby')} class="text-xs sm:text-sm md:text-md lg:text-lg bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded mr-1 mb-2 text-black font-bold shadow-lg">
-						Match lobbies
+				<button 
+					onclick={() => goto('/game_lobby')}
+					class="text-xs sm:text-sm md:text-md lg:text-lg bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded mr-1 mb-2 text-black font-bold shadow-lg">
+					Match lobbies
 				</button>
-				<button onclick={() => goto('/tournament')} class="text-xs sm:text-sm md:text-md lg:text-lg bg-purple-500 hover:bg-purple-600 px-4 py-2 rounded mr-1 mb-2 text-white font-bold shadow-lg">
-						Tournaments
+				<button 
+					onclick={() => goto('/tournament')}
+					class="text-xs sm:text-sm md:text-md lg:text-lg bg-purple-500 hover:bg-purple-600 px-4 py-2 rounded mr-1 mb-2 text-white font-bold shadow-lg">
+					Tournaments
 				</button>
-					<button onclick={() => goto('/profile/2fa')} class="text-xs sm:text-sm md:text-md lg:text-lg bg-amber-400 hover:bg-amber-500 px-4 py-2 rounded mr-1 mb-2 text-black font-bold shadow-lg">
+				<button 
+					onclick={() => goto('/profile/2fa')}
+					class="text-xs sm:text-sm md:text-md lg:text-lg bg-amber-400 hover:bg-amber-500 px-4 py-2 rounded mr-1 mb-2 text-black font-bold shadow-lg">
 					Set 2FA
 				</button>
 			</nav>
@@ -208,7 +255,7 @@
 				</div>
 				<div class="max-h-128 overflow-y-auto space-y-2 divide-cyan-400/10">
 					{#each userFriends as friend}
-					<article class="flex items-center justify-between bg-gray-800 p-3 rounded-lg">
+						<article class="flex items-center justify-between bg-gray-800 p-3 rounded-lg">
 							<div class="ml-2">
 								<p class="text-gray-300 text-xs font-semibold truncate">{friend.alias}</p>
 							</div>
@@ -220,10 +267,44 @@
 				</div>
 			</section>
 			<div class="text-sm md:text-md lg:text-lg mt-6 flex justify-center">
-				<button onclick={() => scrollToSection('page_top')} class="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 active:scale-95 rounded text-black font-bold shadow-lg">
+				<button 
+					onclick={() => scrollToSection('page_top')}
+					class="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 active:scale-95 rounded text-black font-bold shadow-lg">
 					back to top
 				</button>
 			</div>
+			{#if editOverlay}
+			<!-- svelte-ignore a11y_click_events_have_key_events -->
+			<!-- svelte-ignore a11y_no_static_element_interactions -->
+				<div class="fixed inset-0 bg-black/70 flex items-center justify-center z-50" onclick={() => editOverlay = false} aria-label="close edit overlay">
+					<section 
+						onclick={(e) => e.stopPropagation()}
+						class="bg-gradient-to-br from-purple-700 to-indigo-900 p-6 rounded-lg shadow-2xl max-w-md w-full mx-4">
+						<h3 class="sm:text-sm md:text-lg lg:text-2xl mb-4 text-cyan-400">Edit info</h3>
+
+						<div class="space-y-4">
+							<article>
+								<label
+									for="edit-alias"
+									class="text-gray-300 text-xs block mb-2">
+									Alias
+								</label>
+								<div class="flex gap-2">
+									<input
+										id="edit-alias"
+										type="text"
+										bind:value={updatedAlias}
+										class="flex-1 bg-gray-800 text-white px-3 py-2 rounded text-sm"
+										placeholder="Enter new alias"/>
+									<button
+										onclick={() => updateInfo('alias')}
+										class="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded text-xs text-black font-bold">Save</button>
+								</div>
+							</article>
+						</div>
+					</section>
+				</div>
+			{/if}
 		{/if}
 	</main>
 </div>
