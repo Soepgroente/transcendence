@@ -7,6 +7,8 @@
 	import type { User } from '@repo/trpc/src/types';
 	import type { MatchHistoryEntry, TournamentHistoryEntry } from "@repo/db/dbTypes";
 	import { logout } from "$lib/auth/auth"
+	import { signUpInput } from "@repo/trpc/src/schemas";
+	import { z } from "zod";
 		
 	let userAvatar = $state("");
 	let userStat = $state({ wins: 0, losses: 0 });
@@ -77,27 +79,48 @@
 	async function updateInfo(updatedField: string) {
 		try {
 			let res;
-
+			let validInput;
 			switch (updatedField) {
-				case 'alias':
+				case 'Alias':
+					validInput = signUpInput.shape.name.safeParse(updatedAlias);
+					if (!validInput.success) {
+						const messages = validInput.error.issues.map((err) => err.message);
+						// alert('Alias update failed:\n' + messages.join('\n'));
+						throw messages;
+					}
 					res = await trpc.user.updateUserAlias.mutate({ alias: updatedAlias });
 					break
-				case 'email':
+				case 'Email':
+					validInput = signUpInput.shape.email.safeParse(updatedEmail);
+					if (!validInput.success) {
+						const messages = validInput.error.issues.map((err) => err.message);
+						// alert('Email update failed:\n' + messages.join('\n'));
+						throw messages;
+					}
                     res = await trpc.user.updateUserEmail.mutate({ email: updatedEmail });
                     break;
-                case 'password':
+                case 'Password':
+					validInput = signUpInput.shape.password.safeParse(updatedPassword);
+					if (!validInput.success) {
+						const messages = validInput.error.issues.map((err) => err.message);
+						// alert('Password update failed:\n' + messages.join('\n'));
+						throw messages;
+					}
                     res = await trpc.user.updateUserPassword.mutate({ password: updatedPassword });
                     break;
-                case 'avatarPath':
+                case 'Avatar':
                     res = await trpc.user.updateUserAvatar.mutate({ newPath: updatedAvatar });
                     break;
 			}
 
 			if (res?.status === 200) {
 				await loadUserData();
-				alert(`${updatedField} was updated successfully\nPlease log in again to reflect all changes`);
+				alert(`${updatedField} was updated successfully\nPlease reload the page to reflect all changes`);
+			} else {
+				alert(`${updatedField} failed to update`);
 			}
 		} catch (error) {
+			alert(`Failed to update user ${updatedField}: ${error}`);
 			console.error(`Failed to update user ${updatedField}: `, error);
 		}
 	}
@@ -297,8 +320,70 @@
 										class="flex-1 bg-gray-800 text-white px-3 py-2 rounded text-sm"
 										placeholder="Enter new alias"/>
 									<button
-										onclick={() => updateInfo('alias')}
-										class="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded text-xs text-black font-bold">Save</button>
+										onclick={() => updateInfo('Alias')}
+										class="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded text-xs text-black font-bold">
+										Save
+									</button>
+								</div>
+							</article>
+							<article>
+								<label
+									for="edit-email"
+									class="text-gray-300 text-xs block mb-2">
+									Email
+								</label>
+								<div class="flex gap-2">
+									<input
+										id="edit-email"
+										type="text"
+										bind:value={updatedEmail}
+										class="flex-1 bg-gray-800 text-white px-3 py-2 rounded text-sm"
+										placeholder="Enter new email"/>
+									<button
+										onclick={() => updateInfo('Email')}
+										class="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded text-xs text-black font-bold">
+										Save
+									</button>
+								</div>
+							</article>
+							<article>
+								<label
+									for="edit-password"
+									class="text-gray-300 text-xs block mb-2">
+									Password
+								</label>
+								<div class="flex gap-2">
+									<input
+										id="edit-password"
+										type="password"
+										bind:value={updatedPassword}
+										class="flex-1 bg-gray-800 text-white px-3 py-2 rounded text-sm"
+										placeholder="Enter new password"/>
+									<button
+										onclick={() => updateInfo('Password')}
+										class="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded text-xs text-black font-bold">
+										Save
+									</button>
+								</div>
+							</article>
+							<article>
+								<label
+									for="edit-avatar"
+									class="text-gray-300 text-xs block mb-2">
+									Avatar
+								</label>
+								<div class="flex gap-2">
+									<input
+										id="edit-avatar"
+										type="text"
+										bind:value={updatedAvatar}
+										class="flex-1 bg-gray-800 text-white px-3 py-2 rounded text-sm"
+										placeholder="Enter new avatar"/>
+									<button
+										onclick={() => updateInfo('Avatar')}
+										class="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded text-xs text-black font-bold">
+										Save
+									</button>
 								</div>
 							</article>
 						</div>

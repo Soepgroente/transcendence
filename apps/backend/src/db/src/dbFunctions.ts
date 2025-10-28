@@ -7,7 +7,7 @@ import {
   usersTable,
 } from '@repo/db/dbSchema';
 import { db } from './dbClientInit';
-import { eq, and, inArray } from 'drizzle-orm';
+import { eq, and, inArray, isNull } from 'drizzle-orm';
 import { ExistingUser, Match, MatchHistoryEntry, TournamentHistoryEntry } from '@repo/db/dbTypes';
 import { TRPCError } from '@trpc/server';
 import { hashPassword } from '../../auth/password';
@@ -446,10 +446,10 @@ export async function updateUserEmail(userId: number, newEmail: string): Promise
       .set({ email: newEmail })
       .where(and(
         eq(usersTable.id, userId),
-        eq(usersTable.googleId, "")
+        isNull(usersTable.googleId)
       ))
       .returning({ email: usersTable.email });
-    
+  
     return updatedEmail.email;
   } catch (error) {
     throw new TRPCError({
@@ -470,14 +470,19 @@ export async function updateUserPassword(userId: number, newPassword: string): P
   }
   try {
     const newHashedPassword = await hashPassword(newPassword);
-    await db
+    const [newPass] = await db
       .update(usersTable)
       .set({ password: newHashedPassword })
       .where(and(
         eq(usersTable.id, userId),
-        eq(usersTable.googleId, "")
+        isNull(usersTable.googleId)
       ))
+      .returning();
     
+    //  Bad design I'll think about it
+    if (!newPass) {
+     throw "error";
+    }
     return true;
   } catch (error) {
     throw new TRPCError({

@@ -144,7 +144,7 @@ export const userRouter = createRouter({
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'Error in updating user email address'
+          message: 'Error in updating user email address, email update not possible for google users'
         });
       }
     }),
@@ -165,7 +165,7 @@ export const userRouter = createRouter({
       } catch (error) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
-          message: 'Error in updating user password'
+          message: 'Error in updating user password, password update not possible for google users'
         });
       }
     }),
