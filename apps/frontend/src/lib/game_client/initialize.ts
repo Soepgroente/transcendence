@@ -19,7 +19,7 @@ export function	createSurroundingWalls(scene: Scene, walls: Wall[], dimensions: 
 
 	/* | on right */
 	walls.push(
-		new Wall(new Vector3(width, wallHeight, wallThickness),
+		new Wall(new Vector3(wallThickness, wallHeight, height),
 		new Vector3(-width / 2 - wallThickness / 2, wallHeight / 2, 0),
 		new Vector3(1, 0, 0),
 		whiteColor,
@@ -29,7 +29,7 @@ export function	createSurroundingWalls(scene: Scene, walls: Wall[], dimensions: 
 
 	/* | on left */
 	walls.push(
-		new Wall(new Vector3(width, wallHeight, wallThickness),
+		new Wall(new Vector3(wallThickness, wallHeight, height),
 		new Vector3(width / 2 + wallThickness / 2, wallHeight / 2, 0),
 		new Vector3(-1, 0, 0),
 		whiteColor,
@@ -38,7 +38,7 @@ export function	createSurroundingWalls(scene: Scene, walls: Wall[], dimensions: 
 	);
 
 	walls.push(
-		new Wall(new Vector3(width, wallHeight, wallThickness),
+		new Wall(new Vector3(wallThickness, wallHeight, width),
 		new Vector3(0, wallHeight / 2, -height / 2 - wallThickness / 2),
 		new Vector3(0, 0, 1),
 		whiteColor,
@@ -47,7 +47,7 @@ export function	createSurroundingWalls(scene: Scene, walls: Wall[], dimensions: 
 	);
 
 	walls.push(
-		new Wall(new Vector3(width, wallHeight, wallThickness),
+		new Wall(new Vector3(wallThickness, wallHeight, width),
 		new Vector3(0, wallHeight / 2, height / 2 + wallThickness / 2),
 		new Vector3(0, 0, -1),
 		whiteColor,
