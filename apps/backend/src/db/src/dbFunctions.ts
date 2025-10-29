@@ -493,6 +493,42 @@ export async function updateUserPassword(userId: number, newPassword: string): P
   }
 }
 
+export async function createFriendship(user: number, friend: string): Promise<boolean> {
+  try {
+    const newFriend = await findUserByAlias(friend);
+    if (!newFriend) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'No user with this alias',
+      });
+    }
+    const newFriendship = await db
+      .insert(friendshipsTable)
+      .values([
+        {
+          userId: user,
+          friendId: newFriend.id
+        },
+        {
+          userId: newFriend.id,
+          friendId: user
+        }
+      ])
+      .returning();
+    
+    if (!newFriendship) {
+      throw "error";
+    }
+    return true;
+  } catch (error) {
+    throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'createFriendship error',
+          cause: error,
+    });
+  }
+}
+
 export async function updateUser2FASecret(userId: number, secret: string) {
   try {
     await db

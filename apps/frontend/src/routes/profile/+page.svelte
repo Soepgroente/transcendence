@@ -22,6 +22,7 @@
 	let updatedEmail = $state("");
 	let updatedPassword = $state("");
 	let updatedAvatar = $state("");
+	let friendAlias = $state("");
 
 	async function loadUserData() {
 		try {
@@ -125,6 +126,25 @@
 		}
 	}
 
+	async function addFriend(newFriend: string) {
+		try {
+			let res = await trpc.user.createFriendship.mutate({ alias: newFriend });
+			if (res?.status === 200) {
+				await loadUserData();
+				alert(`${newFriend} was added successfully`);
+			} else {
+				alert(`Failed to add friend "${newFriend}`);
+			}
+			friendAlias = "";
+
+		} catch (error) {
+			friendAlias = "";
+			alert(`Failed to add friend "${newFriend}": ${error}`);
+			console.error(`Failed to add friend "${newFriend}": ${error}`);
+		}
+
+	}
+
 	function formatDate(date_str: string) {
 
 		let date = new Date(date_str);
@@ -199,7 +219,7 @@
 				</section>
 			</header>
 			
-			<!-- Lobbies and Tournaments buttons section - They redirect to the corresponding sections below -->
+			<!-- Lobbies and Tournaments buttons section -->
 			<nav class="text-xs sm:text-sm md:text-md lg:text-lg my-6">
 				<button 
 					onclick={() => goto('/game_lobby')}
@@ -223,7 +243,6 @@
 				<div class="px-6 pt-5 border-t-3 border-cyan-400/30 flex justify-between items-center mb-4 rounded-t-2xl">
 					<h3 class="sm:text-sm md:text-lg lg:text-2xl mb-4 text-cyan-400">Match history ({userMatchHistory.length})</h3>
 				</div>
-				<!-- <div class="max-h-128 overflow-y-auto divide-y divide-cyan-400/10"> -->
 				<div class="max-h-128 overflow-y-auto space-y-2">
 					{#each userMatchHistory as match}
 					<article class="flex items-center justify-between bg-gray-800 p-3 rounded-lg">
@@ -249,7 +268,6 @@
 				<div class="px-6 pt-5 border-t-3 border-cyan-400/30 flex justify-between items-center mb-4 rounded-t-2xl">
 					<h3 class="sm:text-sm md:text-lg lg:text-2xl mb-4 text-cyan-400">Tournament history ({userTournamentHistory.length})</h3>
 				</div>
-				<!-- <div class="max-h-128 overflow-y-auto divide-y divide-cyan-400/10"> -->
 				<div class="max-h-128 overflow-y-auto space-y-2">
 					{#each userTournamentHistory as tournamentMatch}
 					<article class="flex items-center justify-between bg-gray-800 p-3 rounded-lg">
@@ -275,6 +293,19 @@
 			<section class="mt-8">
 				<div class="px-6 pt-5 border-t-3 border-cyan-400/30 flex justify-between items-center mb-4 rounded-t-2xl">
 					<h3 class="sm:text-sm md:text-lg lg:text-2xl mb-4 text-cyan-400">Friends ({userFriends.length})</h3>
+					<div class="flex gap-2 mb-4">
+						<input
+							id="edit-alias"
+							type="text"
+							bind:value={friendAlias}
+							class="flex-1 bg-gray-800 text-white px-3 py-2 rounded text-sm"
+							placeholder="Friend alias"/>
+						<button
+							onclick={() => addFriend(friendAlias)}
+							class="bg-cyan-500 hover:bg-cyan-600 px-4 py-2 rounded text-xs text-black font-bold">
+							Add
+						</button>
+					</div>
 				</div>
 				<div class="max-h-128 overflow-y-auto space-y-2 divide-cyan-400/10">
 					{#each userFriends as friend}
