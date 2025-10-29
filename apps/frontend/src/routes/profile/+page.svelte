@@ -145,6 +145,25 @@
 
 	}
 
+		async function removeFriend(friend: string) {
+		try {
+			let res = await trpc.user.removeFriendship.mutate({ alias: friend });
+			if (res?.status === 200) {
+				await loadUserData();
+				alert(`${friend} was removed successfully`);
+			} else {
+				alert(`Failed to remove friend "${friend}`);
+			}
+			friendAlias = "";
+
+		} catch (error) {
+			friendAlias = "";
+			alert(`Failed to add friend "${friend}": ${error}`);
+			console.error(`Failed to add friend "${friend}": ${error}`);
+		}
+
+	}
+
 	function formatDate(date_str: string) {
 
 		let date = new Date(date_str);
@@ -313,6 +332,11 @@
 							<div class="ml-2">
 								<p class="text-gray-300 text-xs font-semibold truncate">{friend.alias}</p>
 							</div>
+							<button
+								onclick={() => removeFriend(friend.alias)}
+								class="bg-red-400 hover:bg-cyan-600 px-4 py-2 rounded text-xs text-black font-bold">
+								X
+							</button>
 						</article>
 					{/each}
 					{#if userFriends.length === 0}

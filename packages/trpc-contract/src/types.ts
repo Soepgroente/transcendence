@@ -30,6 +30,7 @@ export interface Services {
     updateUserEmail: (userId: number, newEmail: string) => Promise<string>;
     updateUserPassword: (userId: number, newPassword: string) => Promise<boolean>;
     createFriendship: (user: number, friend: string) => Promise<boolean>;
+    removeFriendship: (user: number, friend: string) => Promise<boolean>;
   };
   gameStateManager: {
     subscribe: (

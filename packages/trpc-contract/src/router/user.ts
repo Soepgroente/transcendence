@@ -189,5 +189,26 @@ export const userRouter = createRouter({
           message: 'Error in adding user friend'
         });
       }
+    }),
+
+    removeFriendship: protectedProcedure
+    .input(z.object({ alias: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const success = await ctx.services.dbServices.removeFriendship(
+          ctx.userToken.id,
+          input.alias
+        );
+        return {
+          status: 200,
+          message: 'Friendship removed successfully',
+          data: success,
+        };
+      } catch (error) {
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Error in removing user friend'
+        });
+      }
     })
 });

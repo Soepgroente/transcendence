@@ -15,7 +15,8 @@ import {
   updateUserAlias,
   updateUserEmail,
   updateUserPassword,
-  createFriendship
+  createFriendship,
+  removeFriendship
 } from '../db/src/dbFunctions';
 import { GameStateManager } from '../game_server/game-state-manager';
 import { TournamentService } from '../tournament/tournament';
@@ -81,7 +82,8 @@ export async function createTRPCContext({
       updateUserAlias: updateUserAlias,
       updateUserEmail: updateUserEmail,
       updateUserPassword: updateUserPassword,
-      createFriendship: createFriendship
+      createFriendship: createFriendship,
+      removeFriendship: removeFriendship
     },
     gameStateManager: {
       subscribe: gameStateManager.subscribe.bind(gameStateManager),

@@ -7,10 +7,11 @@ import {
   usersTable,
 } from '@repo/db/dbSchema';
 import { db } from './dbClientInit';
-import { eq, and, inArray, isNull } from 'drizzle-orm';
+import { eq, and, or, inArray, isNull } from 'drizzle-orm';
 import { ExistingUser, Match, MatchHistoryEntry, TournamentHistoryEntry } from '@repo/db/dbTypes';
 import { TRPCError } from '@trpc/server';
 import { hashPassword } from '../../auth/password';
+import { networkInterfaces } from 'os';
 
 
 /**
@@ -502,6 +503,9 @@ export async function createFriendship(user: number, friend: string): Promise<bo
         message: 'No user with this alias',
       });
     }
+
+    // Perhaps check for existing friendship and throw confict error here
+    
     const newFriendship = await db
       .insert(friendshipsTable)
       .values([
@@ -514,16 +518,52 @@ export async function createFriendship(user: number, friend: string): Promise<bo
           friendId: user
         }
       ])
-      .returning();
+      .returning({ id: friendshipsTable.id });
     
-    if (!newFriendship) {
-      throw "error";
+    if (!newFriendship || newFriendship.length === 0) {
+      throw "Friendship wasn't created";
     }
     return true;
   } catch (error) {
     throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'createFriendship error',
+          cause: error,
+    });
+  }
+}
+
+export async function removeFriendship(user: number, friend: string): Promise<boolean> {
+  try {
+    const removeFriend = await findUserByAlias(friend);
+    if (!removeFriend) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'No user with this alias',
+      });
+    }
+    const removedFriendship = await db
+      .delete(friendshipsTable)
+      .where(or(
+        and(
+          eq(friendshipsTable.userId, user),
+          eq(friendshipsTable.friendId, removeFriend.id)
+        ),
+        and(
+          eq(friendshipsTable.userId, removeFriend.id),
+          eq(friendshipsTable.friendId, user)
+        )
+      ))
+      .returning({ id: friendshipsTable.id });
+
+    if (!removedFriendship || removedFriendship.length === 0) {
+      throw "Friendship not found";
+    }
+    return true;
+  } catch (error) {
+    throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'removeFriendship error',
           cause: error,
     });
   }
