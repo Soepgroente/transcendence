@@ -167,17 +167,17 @@ export function createScoreboard(scoreboard: TextBlock[], players: Player[])
 {
 	const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 	const advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI('Scores');
-	const background = new Rectangle();
-	background.widthInPixels = canvas.width / 10;
-	background.heightInPixels = 35 * players.length + 10;
-	background.cornerRadius = 10;
-	background.color = 'yellow';
-	background.thickness = 2;
-	background.background = 'rgba(0, 0, 0, 0.8)';
-	background.isVisible = true;
-	background.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
-	background.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
-	advancedTexture.addControl(background);
+	// let background = new Rectangle();
+	// background.widthInPixels = canvas.width / 10;
+	// background.heightInPixels = 35 * players.length + 10;
+	// background.cornerRadius = 10;
+	// background.color = 'yellow';
+	// background.thickness = 2;
+	// background.background = 'rgba(0, 0, 0, 0.8)';
+	// background.isVisible = true;
+	// background.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+	// background.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+	// advancedTexture.addControl(background);
 
 	for (let i = 0; i < players.length; i++)
 	{
