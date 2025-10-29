@@ -30,7 +30,7 @@ export class ClientGame
 	private balls: Ball[] = [];
 	private walls: Wall[] = [];
 	private goals: Goal[] = [];
-	private gameState: GameState | null = null;
+	private gameState: GameState;
 
 	private keysPressed: Set<string> = new Set();
     private upKeys: string[] = ['ArrowUp', 'ArrowRight', 'w', 'd'];
