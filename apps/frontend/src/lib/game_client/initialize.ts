@@ -20,6 +20,7 @@ export function	createSurroundingWalls(scene: Scene, walls: Wall[], dimensions: 
 	/* | on right */
 	walls.push(
 		new Wall(new Vector3(wallThickness, wallHeight, height),
+		new Wall(new Vector3(wallThickness, wallHeight, height),
 		new Vector3(-width / 2 - wallThickness / 2, wallHeight / 2, 0),
 		new Vector3(1, 0, 0),
 		whiteColor,
@@ -30,6 +31,7 @@ export function	createSurroundingWalls(scene: Scene, walls: Wall[], dimensions: 
 	/* | on left */
 	walls.push(
 		new Wall(new Vector3(wallThickness, wallHeight, height),
+		new Wall(new Vector3(wallThickness, wallHeight, height),
 		new Vector3(width / 2 + wallThickness / 2, wallHeight / 2, 0),
 		new Vector3(-1, 0, 0),
 		whiteColor,
@@ -39,6 +41,7 @@ export function	createSurroundingWalls(scene: Scene, walls: Wall[], dimensions: 
 
 	walls.push(
 		new Wall(new Vector3(wallThickness, wallHeight, width),
+		new Wall(new Vector3(wallThickness, wallHeight, width),
 		new Vector3(0, wallHeight / 2, -height / 2 - wallThickness / 2),
 		new Vector3(0, 0, 1),
 		whiteColor,
@@ -47,6 +50,7 @@ export function	createSurroundingWalls(scene: Scene, walls: Wall[], dimensions: 
 	);
 
 	walls.push(
+		new Wall(new Vector3(wallThickness, wallHeight, width),
 		new Wall(new Vector3(wallThickness, wallHeight, width),
 		new Vector3(0, wallHeight / 2, height / 2 + wallThickness / 2),
 		new Vector3(0, 0, -1),
@@ -63,6 +67,7 @@ export function createWalls(scene: Scene, walls: Wall[], map: any)
 		return;
 	}
 	console.log('Creating walls from map data:', map.walls);
+	console.log('Creating walls from map data:', map.walls);
 	for (let i = 0; i < map.walls.length; i++)
 	{
 		walls.push(new Wall
@@ -70,6 +75,8 @@ export function createWalls(scene: Scene, walls: Wall[], map: any)
 			jsonToVector3(map.walls[i].dimensions),
 			jsonToVector3(map.walls[i].location),
 			jsonToVector3(map.walls[i].surfaceNormal),
+			ColorMap['black'],
+			1,
 			ColorMap['black'],
 			1,
 			scene
@@ -167,6 +174,17 @@ export function createScoreboard(scoreboard: TextBlock[], players: Player[])
 {
 	const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 	const advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI('Scores');
+	// let background = new Rectangle();
+	// background.widthInPixels = canvas.width / 10;
+	// background.heightInPixels = 35 * players.length + 10;
+	// background.cornerRadius = 10;
+	// background.color = 'yellow';
+	// background.thickness = 2;
+	// background.background = 'rgba(0, 0, 0, 0.8)';
+	// background.isVisible = true;
+	// background.horizontalAlignment = Control.HORIZONTAL_ALIGNMENT_LEFT;
+	// background.verticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+	// advancedTexture.addControl(background);
 	// let background = new Rectangle();
 	// background.widthInPixels = canvas.width / 10;
 	// background.heightInPixels = 35 * players.length + 10;
