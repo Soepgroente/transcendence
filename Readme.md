@@ -155,6 +155,7 @@ after cloning the repo, from the root directory run and setup env files as menti
 ### Install all dependencies
 ``` bash 
 pnpm install
+pnpm --filter backend db:push
 pnpm dev
 ```
 - Frontend: http://localhost:3000
