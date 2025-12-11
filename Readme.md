@@ -185,7 +185,7 @@ The project was developed by the following contributors:
 
 ## 📸 Screenshots
 
-_Screenshots will be added here_
+<img src="./docs/screenshots/Pong_4players.png" alt="Pong 4 Players" width="50%">
 
 ---
 
