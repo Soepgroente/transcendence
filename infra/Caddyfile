@@ -1,6 +1,5 @@
 # Production reverse proxy
-{$DOMAIN}:9000 {
-    tls internal
+:9000 {
     
     # Backend API
     handle /trpc* {

@@ -12,7 +12,8 @@
     "type-check": "tsc --noEmit",
     "build": "tsup",
     "start": "node dist/index.js",
-    "clean": "rm -rf dist node_modules"
+    "clean": "rm -rf dist node_modules",
+    "studio": "drizzle-kit studio --config=./src/db/drizzle.config.ts"
   },
   "author": "",
   "license": "ISC",

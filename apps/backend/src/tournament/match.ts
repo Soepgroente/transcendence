@@ -4,8 +4,19 @@ import { matchTable, singleMatchPlayersTable } from '@repo/db/dbSchema';
 import { TRPCError } from '@trpc/server';
 import { AvailableMatch } from '@repo/db/dbTypes';
 import { TournamentService } from './tournament';
+import { GameStateManager } from '../game_server/game-state-manager';
+import { getMatchPlayers } from '../db/src';
 
 export class MatchService {
+  private static instance: MatchService;
+
+  static getInstance(): MatchService {
+    if (!MatchService.instance) {
+      MatchService.instance = new MatchService();
+    }
+    return MatchService.instance;
+  }
+
   async createMultiplayerGame(playerId: number, maxPlayers: number) {
     // Logic to create a match in the database
     const [match] = await db
@@ -58,7 +69,7 @@ export class MatchService {
     return match;
   }
 
-  async joinMultiplayerGame(matchId: number, playerId: number) {
+    async joinMultiplayerGame(matchId: number, playerId: number): Promise<AvailableMatch> {
     const match = await MatchService.findMatchById(matchId);
 
     if (match.playerCount >= match.maxPlayers) {
@@ -75,6 +86,9 @@ export class MatchService {
     });
     if (match.playerCount + 1 === match.maxPlayers) {
       match.status = 'ready';
+      const matchPlayers = await getMatchPlayers(matchId);
+      await GameStateManager.getInstance().initGameState(matchId, matchPlayers);
+
     }
     return match;
   }
@@ -153,11 +167,7 @@ export class MatchService {
   }
 }
 
-let tournamentService: TournamentService | null = null;
-
-export function setTournamentService(service: TournamentService) {
-  tournamentService = service;
-}
+const tournamentService = TournamentService.getInstance();
 
 export async function updateMatchStatus(
   matchId: number,

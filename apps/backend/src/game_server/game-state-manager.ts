@@ -5,6 +5,19 @@ import { startGame } from './main';
 import { ServerGame } from './game_objects/server_game';
 
 export class GameStateManager extends EventEmitter {
+  private static instance: GameStateManager;
+
+  private constructor() {
+    super();
+  }
+
+  public static getInstance(): GameStateManager {
+    if (!GameStateManager.instance) {
+      GameStateManager.instance = new GameStateManager();
+    }
+    return GameStateManager.instance;
+  }
+
   private serverGames = new Map<number, ServerGame>();
 
   subscribe(matchId: number, callback: (state: GameState) => void) {

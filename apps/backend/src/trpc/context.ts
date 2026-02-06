@@ -23,10 +23,9 @@ import {
 import { GameStateManager } from '../game_server/game-state-manager';
 import { TournamentService, MatchService } from '../tournament';
 
-// const disableJWT = false; //for development,
-const gameStateManager = new GameStateManager();
-const tournamentService = new TournamentService();
-const matchService = new MatchService();
+const gameStateManager = GameStateManager.getInstance();
+const tournamentService = TournamentService.getInstance();
+const matchService = MatchService.getInstance();
 
 /**
  * Parses the JWT token from the Authorization header.
@@ -88,18 +87,10 @@ export async function createTRPCContext({
       removeFriendship: removeFriendship,
       updateActiveStatus: updateActiveStatus,
     },
-    gameStateManager: {
-      subscribe: gameStateManager.subscribe.bind(gameStateManager),
-      initGameState: gameStateManager.initGameState.bind(gameStateManager),
-      getGameState: gameStateManager.getGameState.bind(gameStateManager),
-      handlePlayerAction:
-        gameStateManager.handlePlayerAction.bind(gameStateManager),
-    },
+    gameStateManager: gameStateManager,
     tournament: tournamentService,
     match: matchService,
   };
 
-  // let user = { id: 1, email: 'example11758728678904@example.com', name: '' }; // default guest user
-  // return { db, services, userToken, user};
   return { db, services, userToken };
 }

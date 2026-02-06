@@ -13,7 +13,7 @@ Use this tool to sign up, sign in, and view your match history directly from the
 ## Requirements
 
 - The backend server must be running and accessible for the CLI to work.
-- By default, the CLI connects to the backend API at `localhost`.  
+- By default, the CLI connects to the backend API at `backend`.
   You can change this by setting the `BACKEND_API` environment variable.
 
 ## Usage
@@ -25,8 +25,10 @@ pnpm --filter cli dev [command]
 ```
 
 ### Production
+access to cli docker 
 
 ```bash
-pnpm --filter cli build
-pnpm --filter cli start [command]
+docker compose -f compose.prod.yaml exec  cli /bin/sh
 ```
+
+run `pong` and choose from help menu

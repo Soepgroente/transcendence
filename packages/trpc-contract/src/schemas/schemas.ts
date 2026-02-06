@@ -3,6 +3,7 @@ import { z } from 'zod';
 const userNameSchema = z
   .string()
   .min(3, 'Name must be at least 3 characters long')
+  .max(16, 'Name must be at most 16 characters long')
   .regex(
     /^[a-zA-Z0-9_]+$/,
     'Name can only contain letters, numbers, and underscores'

@@ -16,7 +16,6 @@ import {
   TournamentRound,
 } from '@repo/trpc';
 import { EventEmitter } from 'events';
-import { setTournamentService } from './match';
 
 async function insertTournament(
   name: string,
@@ -120,13 +119,22 @@ async function getTournamentMatches(tournamentId: number): Promise<Match[]> {
  * This class contains methods to create, join, list tournaments and get tournament players
  */
 export class TournamentService extends EventEmitter {
+  private static instance: TournamentService;
+
   private bracketState = new Map<number, TournamentBrackets>();
 
   constructor() {
     super();
     this.setMaxListeners(20);
-    setTournamentService(this);
   }
+
+  static getInstance(): TournamentService {
+    if (!TournamentService.instance) {
+      TournamentService.instance = new TournamentService();
+    }
+    return TournamentService.instance;
+  }
+
   subscribeToBracketUpdates(
     tournamentId: number,
     callback: (state: TournamentBrackets) => void
