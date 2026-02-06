@@ -2,6 +2,7 @@ import { loginInput, signUpInput } from '@repo/trpc/schemas';
 import { trpc } from '../trpc';
 import { authStoreMethods } from '$lib/auth/store';
 import { goto } from '$app/navigation';
+import { getBackendApiUrl } from '../trpc';
 
 export async function signUp(name: string, email: string, password: string, twofa_enabled = 0) {
   try {
@@ -58,7 +59,7 @@ export async function login(email: string, password: string) {
 
 export async function verify2FAToLogin(userId: number, code: string) {
   try {
-    const res = await fetch('/api/auth/2fa/verify_login', {
+    const res = await fetch(`${getBackendApiUrl()}/api/auth/2fa/verify_login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userId, token: code }),

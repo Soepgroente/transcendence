@@ -20,6 +20,18 @@ function getBackendUrl() {
   return url;
 }
 
+export function getBackendApiUrl() {
+    if (import.meta.env.PROD) {
+    const url = `${window.location.origin}`;
+    console.log('Production browser URL:', url);
+    return url;
+  }
+  const host = import.meta.env.VITE_BACKEND_HOST ?? 'localhost';
+  const url = `http://${host}:4000`;
+  console.log('Development browser || SSR URL:', url);
+  return url;
+}
+
 export function getAuthToken(): string | null {
   return localStorage.getItem('authToken');
 }
